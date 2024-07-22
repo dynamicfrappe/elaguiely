@@ -1,0 +1,56 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{customer}.{##}",
+ "creation": "2023-10-04 15:50:07.151258",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "customer",
+  "items_section_section",
+  "items"
+ ],
+ "fields": [
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "customer",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "items_section_section",
+   "fieldtype": "Section Break",
+   "label": "Items section "
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "options": "favorite Item"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-10-04 16:04:47.372904",
+ "modified_by": "Administrator",
+ "module": "elaguiely",
+ "name": "favorite",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}

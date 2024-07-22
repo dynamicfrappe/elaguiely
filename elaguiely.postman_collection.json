@@ -1,0 +1,655 @@
+{
+	"info": {
+		"_postman_id": "e51b6c37-76d7-40fa-a989-5973a2ea0ee5",
+		"name": "elaguiely",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "15332251"
+	},
+	"item": [
+		{
+			"name": "login",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "usr",
+							"value": "Administrator",
+							"type": "text"
+						},
+						{
+							"key": "pwd",
+							"value": "D@123456",
+							"type": "text"
+						}
+					]
+				},
+				"url": "{{url}}/api/method/elaguiely.auth_api.login"
+			},
+			"response": []
+		},
+		{
+			"name": "item for brand",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/method/elaguiely.apis.item.get_items?brand=Home Made",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"method",
+						"elaguiely.apis.item.get_items"
+					],
+					"query": [
+						{
+							"key": "brand",
+							"value": "Home Made"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "item for offers",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/method/elaguiely.apis.item.get_items?offer=Home Made",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"method",
+						"elaguiely.apis.item.get_items"
+					],
+					"query": [
+						{
+							"key": "offer",
+							"value": "Home Made"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add-remove favorite",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "item",
+							"value": "00120",
+							"type": "text"
+						},
+						{
+							"key": "qty",
+							"value": "-1",
+							"type": "text"
+						}
+					]
+				},
+				"url": "{{url}}/api/method/elaguiely.apis.fav.add_to_fav"
+			},
+			"response": []
+		},
+		{
+			"name": "item for best sales",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/method/elaguiely.apis.item.get_items?best_sell=1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"method",
+						"elaguiely.apis.item.get_items"
+					],
+					"query": [
+						{
+							"key": "best_sell",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "item for new_arrive",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/method/elaguiely.apis.item.get_items?new_arrive=1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"method",
+						"elaguiely.apis.item.get_items"
+					],
+					"query": [
+						{
+							"key": "new_arrive",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "item for item group",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/method/elaguiely.apis.item.get_items?item_group=Products",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"method",
+						"elaguiely.apis.item.get_items"
+					],
+					"query": [
+						{
+							"key": "item_group",
+							"value": "Products"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "brand",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{url}}/api/method/elaguiely.apis.api.get_brands"
+			},
+			"response": []
+		},
+		{
+			"name": "add and remove from  cart",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "item",
+							"value": "00120",
+							"type": "text"
+						},
+						{
+							"key": "price",
+							"value": "100",
+							"type": "text"
+						},
+						{
+							"key": "offer",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "qty",
+							"value": "2",
+							"description": "negative for remove ",
+							"type": "text"
+						},
+						{
+							"key": "price_before_discount",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url}}/api/method/elaguiely.apis.cart.add_to_cart",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"method",
+						"elaguiely.apis.cart.add_to_cart"
+					],
+					"query": [
+						{
+							"key": "item",
+							"value": "test",
+							"disabled": true
+						},
+						{
+							"key": "price",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "offers",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{url}}/api/method/elaguiely.apis.api.get_brands"
+			},
+			"response": []
+		},
+		{
+			"name": "item_group",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{url}}/api/method/elaguiely.apis.api.get_item_groups"
+			},
+			"response": []
+		},
+		{
+			"name": "register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "username",
+							"value": "beshoy",
+							"description": "text",
+							"type": "text"
+						},
+						{
+							"key": "email",
+							"value": "beshoy@gmail.com",
+							"description": "email",
+							"type": "text"
+						},
+						{
+							"key": "phone",
+							"value": "01478569",
+							"description": "text",
+							"type": "text"
+						},
+						{
+							"key": "customer_type",
+							"value": "Individual",
+							"description": "one of [Individual - Company] ",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "Dynamic@123456",
+							"description": "text",
+							"type": "text"
+						}
+					]
+				},
+				"url": "{{url}}/api/method/elaguiely.auth_api.register"
+			},
+			"response": []
+		},
+		{
+			"name": "ask_for_forget_password",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "email",
+							"value": "asdasdasdas@gmail.coms",
+							"type": "text"
+						},
+						{
+							"key": "phone",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": "{{url}}/api/method/elaguiely.elaguiely.reset_pass.ask_for_forget_password"
+			},
+			"response": []
+		},
+		{
+			"name": "reset_pass_form",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "code",
+							"value": "87e4d5fb",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "123456789",
+							"type": "text"
+						},
+						{
+							"key": "repeat_password",
+							"value": "123456789",
+							"type": "text"
+						}
+					]
+				},
+				"url": "{{url}}/api/method/elaguiely.elaguiely.reset_pass.validate_reset_request"
+			},
+			"response": []
+		},
+		{
+			"name": "reset_pass",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "code",
+							"value": "87e4d5fb",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "123456789",
+							"type": "text"
+						},
+						{
+							"key": "repeat_password",
+							"value": "123456789",
+							"type": "text"
+						}
+					]
+				},
+				"url": "{{url}}/api/method/elaguiely.elaguiely.reset_pass.reset_password"
+			},
+			"response": []
+		},
+		{
+			"name": "customer favortir list",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/method/elaguiely.apis.item.get_items?favorite=administrator.03",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"method",
+						"elaguiely.apis.item.get_items"
+					],
+					"query": [
+						{
+							"key": "favorite",
+							"value": "administrator.03"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create address",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "address_1",
+							"value": "test",
+							"description": "required",
+							"type": "text"
+						},
+						{
+							"key": "address_2",
+							"value": "test",
+							"description": "option",
+							"type": "text"
+						},
+						{
+							"key": "city",
+							"value": "dsfd",
+							"description": "required",
+							"type": "text"
+						},
+						{
+							"key": "state",
+							"value": "sdf",
+							"description": "option",
+							"type": "text"
+						},
+						{
+							"key": "pincode",
+							"value": "sdfs",
+							"description": "option",
+							"type": "text"
+						},
+						{
+							"key": "building_no",
+							"value": "12",
+							"description": "option",
+							"type": "text"
+						},
+						{
+							"key": "floor_no",
+							"value": "1",
+							"description": "option",
+							"type": "text"
+						},
+						{
+							"key": "apartment_no",
+							"value": "1",
+							"description": "option",
+							"type": "text"
+						},
+						{
+							"key": "phone",
+							"value": "",
+							"description": "option",
+							"type": "text"
+						},
+						{
+							"key": "email_id",
+							"value": "",
+							"description": "option",
+							"type": "text"
+						},
+						{
+							"key": "defaulte",
+							"value": "",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url}}/api/method/elaguiely.apis.customers.create_address",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"method",
+						"elaguiely.apis.customers.create_address"
+					],
+					"query": [
+						{
+							"key": "name",
+							"value": "dddd",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get address",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{url}}/api/method/elaguiely.apis.customers.get_address"
+			},
+			"response": []
+		},
+		{
+			"name": "get address  details",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "address",
+							"value": "administrator-379079-Shipping",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url}}/api/method/elaguiely.apis.customers.address_info?address=administrator-379079-Shipping",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"method",
+						"elaguiely.apis.customers.address_info"
+					],
+					"query": [
+						{
+							"key": "address",
+							"value": "administrator-379079-Shipping"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "cart details",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "cart",
+							"value": "CART-administrator-.14",
+							"type": "text"
+						}
+					]
+				},
+				"url": "{{url}}/api/method/elaguiely.apis.cart.cart_details"
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": {
+			"token": "token {{api_key}}:{{api_secret}}"
+		}
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "https://caecomme.vip-dental.store/",
+			"type": "string"
+		},
+		{
+			"key": "url",
+			"value": "http://0.0.0.0:8002",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "api_key",
+			"value": "441da8a809b7bb6",
+			"type": "string"
+		},
+		{
+			"key": "api_secret",
+			"value": "cd7e63b4a4d1f1e",
+			"type": "string"
+		},
+		{
+			"key": "api_key",
+			"value": "f630176890e96b5",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "api_secret",
+			"value": "53e1a201fbecc96",
+			"type": "string",
+			"disabled": true
+		}
+	]
+}

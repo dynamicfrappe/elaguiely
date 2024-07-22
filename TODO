@@ -1,0 +1,18 @@
+gira function 
+in apis/customer 
+1 -add address api 
+ -create /details / update /delete 
+2 - create end point to confirm order 
+3 - create end point to cart details
+
+
+in apis/utiles,py 
+1- update caculate_item_base_on_offer function sto get offer and price after apply offer 
+
+in apis/items 
+check customer group to apply price list 
+caculate item stock qty /and set item stock status 
+
+
+
+

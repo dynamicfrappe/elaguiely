@@ -1,0 +1,139 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:CART-{customer}-.{##}",
+ "creation": "2023-10-04 13:36:28.851210",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "date",
+  "customer",
+  "customer_name",
+  "data_4",
+  "cart_item",
+  "tax_and_discount_section",
+  "tax_template",
+  "total_tax",
+  "column_break_9",
+  "coupon_code",
+  "total_discount",
+  "totals_section",
+  "total",
+  "grand_total",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "label": "Date"
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "label": "Customer Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "data_4",
+   "fieldtype": "Section Break",
+   "label": "Item Sectiom"
+  },
+  {
+   "fieldname": "cart_item",
+   "fieldtype": "Table",
+   "label": "Cart Item",
+   "options": "Cart Item"
+  },
+  {
+   "fieldname": "tax_and_discount_section",
+   "fieldtype": "Section Break",
+   "label": "Tax and Discount"
+  },
+  {
+   "fieldname": "tax_template",
+   "fieldtype": "Link",
+   "label": "Tax Template",
+   "options": "Sales Taxes and Charges Template"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_tax",
+   "fieldtype": "Data",
+   "label": "Total Tax"
+  },
+  {
+   "fieldname": "column_break_9",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "coupon_code",
+   "fieldtype": "Link",
+   "label": " Coupon Code",
+   "options": "Coupon Code"
+  },
+  {
+   "default": "0",
+   "fieldname": "total_discount",
+   "fieldtype": "Data",
+   "label": "Total discount"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Cart",
+   "print_hide": 1,
+   "read_only": 1
+  },
+  {
+   "fieldname": "totals_section",
+   "fieldtype": "Section Break",
+   "label": "Totals"
+  },
+  {
+   "default": "0",
+   "fieldname": "total",
+   "fieldtype": "Data",
+   "label": "Total"
+  },
+  {
+   "default": "0",
+   "fieldname": "grand_total",
+   "fieldtype": "Data",
+   "label": "Grand Total"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2023-10-16 23:48:09.461123",
+ "modified_by": "Administrator",
+ "module": "elaguiely",
+ "name": "Cart",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC"
+}
