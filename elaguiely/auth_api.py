@@ -75,7 +75,7 @@ def login(usr=False, pwd=False ,cmd= False , *args ,**kwargs):
 			"fav_count" : len(fav.items)
 			 
 		}
-
+		frappe.db.commit()
 		#frappe.cache().set_value(user_key, data)
 		frappe.local.response["data"] = data
 	else :

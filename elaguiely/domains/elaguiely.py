@@ -149,6 +149,15 @@ data = {
               "options" : "Warehouse"
                  
             }
+        ],
+        "Sales Order" :[
+            {
+               "fieldname"    : "cart",
+               "fieldtype"    : "Link",
+               "insert_after" : "customer",
+               "label"        : _("Cart"),
+                "options" : "Cart"    
+            }
         ]
 
 

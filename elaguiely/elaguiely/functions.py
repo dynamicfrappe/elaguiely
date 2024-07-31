@@ -78,3 +78,31 @@ def create_favorite(customer) :
         #set to cached data
         frappe.cache().set_value(fav_key, fav)
         return fav 
+    
+# /home/frappe/frappe-13/apps/elaguiely/elaguiely/elaguiely/functions
+@frappe.whitelist(allow_guest=True)
+def create_sales_order(cart):
+    if 'Elaguiely' in DOMAINS:
+        if frappe.db.exists("Cart" ,cart ):
+            cart_obj = frappe.get_doc("Cart" , cart)
+            order_obj = frappe.new_doc("Sales Order")
+            order_obj.order_type = "Sales"
+            order_obj.cart = cart_obj.name
+            order_obj.customer = cart_obj.customer
+            order_obj.delivery_date = cart_obj.date
+            order_obj.delivery_date = cart_obj.date
+            order_obj.taxes_and_charges = cart_obj.tax_template
+            if cart_obj.get("cart_item"):
+                for item in cart_obj.get("cart_item"):
+                    order_obj.append("items",{
+                        "item_code": item.item,
+                        "item_name": item.item_name,
+                        "description": item.description ,
+                        "qty": item.qty ,
+                        "rate": item.rate,
+                        "amount": item.total,
+                        "uom": item.uom ,
+                    })
+                order_obj.save(ignore_permissions = True)
+                frappe.db.commit()
+            return order_obj.name

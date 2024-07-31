@@ -37,7 +37,7 @@ response data  {
 
 
 # Api for get Brand / Item Group / Category / item detaild  
-@frappe.whitelist(allow_guest =0)
+@frappe.whitelist(allow_guest = True)
 @update_items
 def get_items (filters = {} ,*args , **kwargs) :
    """
