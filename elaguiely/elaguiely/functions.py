@@ -80,8 +80,8 @@ def create_favorite(customer) :
         return fav 
     
 # /home/frappe/frappe-13/apps/elaguiely/elaguiely/elaguiely/functions
-@frappe.whitelist(allow_guest=True)
-def create_sales_order(cart):
+@frappe.whitelist(allow_guest=False)
+def create_sales_order(cart ):
     if 'Elaguiely' in DOMAINS:
         if frappe.db.exists("Cart" ,cart ):
             cart_obj = frappe.get_doc("Cart" , cart)
