@@ -103,6 +103,8 @@ def create_sales_order(cart ):
                         "amount": item.total,
                         "uom": item.uom ,
                     })
+                cart_obj.set("cart_item", [])
+                cart_obj.save(ignore_permissions=True)
                 order_obj.save(ignore_permissions = True)
                 frappe.db.commit()
             return order_obj.name
