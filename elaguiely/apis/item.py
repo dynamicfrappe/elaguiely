@@ -88,7 +88,7 @@ def get_items (filters = {} ,*args , **kwargs) :
     
    data = f"""
          select a.name as sid  , a.item_name as en_name , a.arabic_name as arabic_name ,b.uom , 
-         a.item_group , a.brand , a.description ,CONCAT( {url} , a.image) as image, 
+         a.item_group , a.brand , a.description , a.image as image, 
           0 as in_favorites ,
          0 as has_offer ," " as offer ,a.max_order as max_order ,
          b.price_list_rate
