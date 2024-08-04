@@ -140,5 +140,6 @@ def get_items (filters = {} ,*args , **kwargs) :
    items = frappe.db.sql(data+"GROUP BY a.item_code ,b.uom" , as_dict =1)
    for item in items:
        item['image'] = url + item.get('image')
+       item["after_discount"] = item.get('item_price') - item.get('item_discount')
    return items
 
