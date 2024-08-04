@@ -138,5 +138,7 @@ def get_items (filters = {} ,*args , **kwargs) :
       except :
           pass
    items = frappe.db.sql(data+"GROUP BY a.item_code ,b.uom" , as_dict =1)
+   for item in items:
+       item['image'] = url + item.get('image')
    return items
 
