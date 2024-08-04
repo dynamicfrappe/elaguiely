@@ -6,7 +6,7 @@ from elaguiely.elaguiely.functions import (
                                             create_cart ,
                                             create_favorite
                                           )
-
+from elaguiely.apis.api import get_url
 
 """
 response data  {
@@ -72,6 +72,8 @@ def get_items (filters = {} ,*args , **kwargs) :
        print("Cart" , cart.name , "Favorite" , favorire)
    cart_sql = "0  as item_in_cart , 0 as cart_qty , 0 as cart_amount  "
    favorire_sql = '0'
+   url = get_url()
+   print(url)
    if cart :
        if cart.get("name") :
            print(cart.get("name"))
