@@ -141,6 +141,5 @@ def get_items (filters = {} ,*args , **kwargs) :
    for item in items:
        item['image'] = url + item.get('image')
        item["after_discount"] = item.get('item_price') - item.get('item_discount')
-    #    fg
    return items
 
