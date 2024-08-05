@@ -180,7 +180,7 @@ def create_user_if_not_exists(cst,**kwargs):
 			"user_type": "System User",
 			"first_name": kwargs.get('username'),
 			"email": kwargs.get('email'),
-			"enabled": 1,
+			"enabled": 0,
 			"is_customer": 1,
 			"customer": cst,
 			"phone": kwargs.get('phone'),
