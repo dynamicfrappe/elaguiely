@@ -184,6 +184,7 @@ def create_user_if_not_exists(cst,**kwargs):
 			"is_customer": 1,
 			"customer": cst,
 			"phone": kwargs.get('phone'),
+			"mobile_no": kwargs.get('phone'),
 			"new_password":kwargs.get('password'),
 			# "roles": [{"doctype": "Has Role", "role": "Customer"}],
 			"roles": [{ "role": "Customer"} ,{"role" :"System Manager"}],
