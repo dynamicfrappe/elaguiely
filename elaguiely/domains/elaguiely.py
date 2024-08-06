@@ -152,12 +152,20 @@ data = {
         ],
         "Sales Order" :[
             {
-               "fieldname"    : "cart",
-               "fieldtype"    : "Link",
-               "insert_after" : "customer",
-               "label"        : _("Cart"),
+                "fieldname"    : "cart",
+                "fieldtype"    : "Link",
+                "insert_after" : "customer",
+                "label"        : _("Cart"),
                 "options" : "Cart"    
-            }
+            },
+            {
+                "fieldname"    : "status_table",
+                "fieldtype"    : "Table",
+                "insert_after" : "more_info",
+                "label"        : _("Status Table"),
+                "options" : "Status Table"    
+            },
+
         ]
 
 

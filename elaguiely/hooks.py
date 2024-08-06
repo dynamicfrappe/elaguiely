@@ -102,6 +102,10 @@ doc_events = {
 		"on_trash": "elaguiely.elaguiely.functions.on_trash" 
 	
 	},
+    "Sales Order": {
+		"validate": "elaguiely.apis.sales_order.on_change",
+        "on_submit": "elaguiely.apis.sales_order.on_change",
+	},
 }
 
 # Scheduled Tasks
