@@ -103,8 +103,10 @@ doc_events = {
 	
 	},
     "Sales Order": {
-		"validate": "elaguiely.apis.sales_order.on_change",
-        "on_submit": "elaguiely.apis.sales_order.on_change",
+		"validate": [
+            "elaguiely.apis.sales_order.on_change",
+            "elaguiely.apis.sales_order.date_of_submit",
+            ],
 	},
 }
 

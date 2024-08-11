@@ -165,6 +165,13 @@ data = {
                 "label"        : _("Status Table"),
                 "options" : "Status Table"    
             },
+            {
+                "fieldname"    : "submit_datetime",
+                "fieldtype"    : "Datetime",
+                "insert_after" : "status_table",
+                "label"        : _("submit_datetime"),
+                # "hidden": 1,
+            },
 
         ]
 

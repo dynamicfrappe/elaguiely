@@ -61,3 +61,13 @@ def get_url():
 
 	return url
 
+
+
+@frappe.whitelist(allow_guest = 0)
+def profile(*args , **kwargs):
+     user = frappe.session.user
+   #   return user
+     customer = frappe.get_value("User", user , 'customer')
+     profile_obj = frappe.get_value("Customer" , customer , ['customer_name' , 'customer_type' , 'territory' , 'mobile_no' , 'email_id' ,'customer_primary_address'])
+     return profile_obj
+
