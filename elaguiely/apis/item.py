@@ -138,8 +138,17 @@ def get_items (filters = {} ,*args , **kwargs) :
       except :
           pass
    items = frappe.db.sql(data+"GROUP BY a.item_code ,b.uom" , as_dict =1)
-   for item in items:
-    #    item['image'] = url + item.get('image')
-       item["after_discount"] = item.get('item_price') - item.get('item_discount')
+#    items = get_item_price_from_uom(items)
    return items
 
+
+
+
+def get_item_price_from_uom(items , price_list):
+    item_price = {}
+    for item in items:
+        item_code = item.get("sid") 
+        item_price = frappe.db.sql(f""" select uom , price_list_rate from `tabItem Price` where item_code = '{item_code}' and selling = 1  and price_list = '{price_list}';""" , as_dict = 1)
+        item['item_price'] = item_price
+        # item["after_discount"] = item.get('item_price') - item.get('item_discount')
+    return items
