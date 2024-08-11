@@ -62,12 +62,14 @@ def get_url():
 	return url
 
 
+import html2text
 
 @frappe.whitelist(allow_guest = 0)
 def profile(*args , **kwargs):
      user = frappe.session.user
    #   return user
      customer = frappe.get_value("User", user , 'customer')
-     profile_obj = frappe.get_value("Customer" , customer , ['customer_name' , 'customer_type' , 'territory' , 'mobile_no' , 'email_id' ,'primary_address'])
-     return profile_obj
+     profile = frappe.db.sql(f""" select customer_name , customer_type , territory , mobile_no , email_id , primary_address from `tabCustomer` where name = '{customer}' """ , as_dict = 1 )[0]
+     profile['primary_address'] =  html2text.html2text(profile['primary_address'])
+     return profile
 
