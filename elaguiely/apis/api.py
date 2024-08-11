@@ -63,13 +63,18 @@ def get_url():
 
 
 import html2text
+from bs4 import BeautifulSoup
+
 
 @frappe.whitelist(allow_guest = 0)
 def profile(*args , **kwargs):
      user = frappe.session.user
    #   return user
      customer = frappe.get_value("User", user , 'customer')
-     profile = frappe.db.sql(f""" select customer_name , customer_type , territory , mobile_no , email_id , primary_address from `tabCustomer` where name = '{customer}' """ , as_dict = 1 )[0]
-     profile['primary_address'] =  html2text.html2text(profile['primary_address'])
+     profile = frappe.db.sql(f""" select customer_name , customer_type , territory , mobile_no , email_id , primary_address from `tabCustomer` where name = '{customer}' """ , as_dict = 1 )
+     if profile:
+      soup = BeautifulSoup(profile[0].get('primary_address'), 'html.parser')
+      profile[0]['primary_address'] =  [line.strip() for line in soup.get_text(separator='\n').splitlines() if line.strip()]
+
      return profile
 
