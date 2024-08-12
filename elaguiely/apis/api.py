@@ -15,32 +15,32 @@ Category
 @frappe.whitelist(allow_guest =True )
 @get_reponse
 def get_brands(*args , **kwargs) :
-   data = frappe.db.sql(""" SELECT brand as en_name , arabic_name  ,name as sid  ,image FROM    `tabBrand`  """ ,as_dict=1)
-   return data
+	data = frappe.db.sql(""" SELECT brand as en_name , arabic_name  ,name as sid  ,image FROM    `tabBrand`  """ ,as_dict=1)
+	return data
 
 @frappe.whitelist(allow_guest =True )
 @get_reponse
 def get_item_groups(*args , **kwargs) :
-   data = frappe.db.sql(""" SELECT item_group_name as en_name , arabic_name  ,name as sid , image FROM    `tabItem Group`  """ ,as_dict=1)
-   return data
+	data = frappe.db.sql(""" SELECT item_group_name as en_name , arabic_name  ,name as sid , image FROM    `tabItem Group`  """ ,as_dict=1)
+	return data
 
 @frappe.whitelist(allow_guest =True )
 @get_reponse
 def get_category(*args , **kwargs) :
-   data = frappe.db.sql(""" SELECT name1 as en_name , arabic_name  , name as sid  FROM    
-   `tabCategory`  """ ,as_dict=1)
-   return data
+	data = frappe.db.sql(""" SELECT name1 as en_name , arabic_name  , name as sid  FROM    
+	`tabCategory`  """ ,as_dict=1)
+	return data
 
 
 
 @frappe.whitelist(allow_guest =True )
 @get_reponse
 def get_offers(*args, **kwargs) :
-   data = frappe.db.sql(""" 
-   SELECT title  ,image ,name as sid
-   FROM `tabPricing Rule` WHERE selling=1 and disable = 0
-   """,as_dict =True)
-   return data
+	data = frappe.db.sql(""" 
+	SELECT title  ,image ,name as sid
+	FROM `tabPricing Rule` WHERE selling=1 and disable = 0
+	""",as_dict =True)
+	return data
 
 
 def get_url():
@@ -64,12 +64,13 @@ def get_url():
 
 @frappe.whitelist(allow_guest = 0)
 def profile(*args , **kwargs):
-     user = frappe.session.user
-     customer = frappe.get_value("User", user , 'customer')
-     profile = frappe.db.sql(f""" select customer_name , customer_type , territory , mobile_no , email_id , primary_address as address , customer_primary_address from `tabCustomer` where name = '{customer}' """ , as_dict = 1 )
-     if profile[0].get('customer_primary_address'):
-          address = frappe.get_value("Address" , profile[0].get('customer_primary_address') , ['address_line1' , 'address_line2' , 'city as area' , 'state as city' , 'country'],as_dict=1)
-          profile[0]['address'] = address
+	user = frappe.session.user
+	customer = frappe.get_value("User", user , 'customer')
+	profile = frappe.db.sql(f""" select customer_name , customer_type , territory , mobile_no , email_id , primary_address as address , customer_primary_address from `tabCustomer` where name = '{customer}' """ , as_dict = 1 )
+	if profile:
+		if profile[0].get('customer_primary_address'):
+			address = frappe.get_value("Address" , profile[0].get('customer_primary_address') , ['address_line1' , 'address_line2' , 'city as area' , 'state as city' , 'country'],as_dict=1)
+			profile[0]['address'] = address
 
-     return profile
+	return profile
 
