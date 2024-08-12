@@ -72,7 +72,7 @@ def profile(*args , **kwargs):
    #   return user
      customer = frappe.get_value("User", user , 'customer')
      profile = frappe.db.sql(f""" select customer_name , customer_type , territory , mobile_no , email_id , primary_address from `tabCustomer` where name = '{customer}' """ , as_dict = 1 )
-     if profile:
+     if profile[0].get('primary_address'):
       soup = BeautifulSoup(profile[0].get('primary_address'), 'html.parser')
       profile[0]['primary_address'] =  [line.strip() for line in soup.get_text(separator='\n').splitlines() if line.strip()]
 
