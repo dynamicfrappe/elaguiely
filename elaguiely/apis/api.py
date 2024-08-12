@@ -71,10 +71,13 @@ def profile(*args , **kwargs):
      user = frappe.session.user
    #   return user
      customer = frappe.get_value("User", user , 'customer')
-     profile = frappe.db.sql(f""" select customer_name , customer_type , territory , mobile_no , email_id , primary_address from `tabCustomer` where name = '{customer}' """ , as_dict = 1 )
-     if profile[0].get('primary_address'):
-      soup = BeautifulSoup(profile[0].get('primary_address'), 'html.parser')
-      profile[0]['primary_address'] =  [line.strip() for line in soup.get_text(separator='\n').splitlines() if line.strip()]
+     profile = frappe.db.sql(f""" select customer_name , customer_type , territory , mobile_no , email_id , primary_address , customer_primary_address from `tabCustomer` where name = '{customer}' """ , as_dict = 1 )
+     if profile[0].get('customer_primary_address'):
+          address = frappe.get_value("Address" , profile[0].get('customer_primary_address') , ['address_line1' , 'address_line2' , 'city as area' , 'state' , 'country'])
+          profile['address'] = address
+   #   if profile[0].get('primary_address'):
+   #    soup = BeautifulSoup(profile[0].get('primary_address'), 'html.parser')
+   #    profile[0]['primary_address'] =  [line.strip() for line in soup.get_text(separator='\n').splitlines() if line.strip()]
 
      return profile
 
