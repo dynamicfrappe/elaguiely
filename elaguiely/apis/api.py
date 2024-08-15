@@ -66,10 +66,10 @@ def get_url():
 def profile(*args , **kwargs):
 	user = frappe.session.user
 	customer = frappe.get_value("User", user , 'customer')
-	profile = frappe.db.sql(f""" select customer_name , customer_type , territory , mobile_no , email_id , primary_address as address , customer_primary_address from `tabCustomer` where name = '{customer}' """ , as_dict = 1 )
+	profile = frappe.db.sql(f""" select customer_name , customer_type , mobile_no , email_id , primary_address as address , customer_primary_address from `tabCustomer` where name = '{customer}' """ , as_dict = 1 )
 	if profile:
 		if profile[0].get('customer_primary_address'):
-			address = frappe.get_value("Address" , profile[0].get('customer_primary_address') , ['address_line1' , 'address_line2' , 'city as area' , 'state as city' , 'country'],as_dict=1)
+			address = frappe.get_value("Address" , profile[0].get('customer_primary_address') , ['address_line1 as address_line' , 'city as area' , 'state as city' , 'country'],as_dict=1)
 			profile[0]['address'] = address
 
 	return profile

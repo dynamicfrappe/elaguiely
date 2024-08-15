@@ -142,12 +142,26 @@ def register_create_customer(**kwargs):
 				"is_primary":1
 			})
 			contact.insert(ignore_permissions=True)
+			#**create address
+			address = frappe.new_doc('Address')
+			address.address_title = customer.customer_name
+			address.address_line1 = kwargs.get('address')
+			address.city = kwargs.get('area')
+			address.state = kwargs.get('city')
+			address.country = kwargs.get('country') or "Egypt"
+			address.append('links',{
+				"link_doctype":"Customer",
+				"link_name":customer.name,
+				"link_type":customer.customer_name,
+			})
+			address.insert(ignore_permissions=True)
 			#** create user 
 			new_user = create_user_if_not_exists(customer.name,**kwargs)
 			#**link cst with contact
 			contact_name = frappe.db.get_value('Dynamic Link',{'link_doctype':'Customer', 'link_name':customer.name}, ['parent'])
 			# return {"contact_name":contact_name}
-			customer.customer_primary_contact = contact_name
+			customer.customer_primary_contact = contact.name
+			customer.customer_primary_address = address.name
 			customer.mobile_no = contact.mobile_no
 			customer.account_manager = new_user.name
 			customer.save(ignore_permissions=True)
@@ -180,7 +194,7 @@ def create_user_if_not_exists(cst,**kwargs):
 			"user_type": "System User",
 			"first_name": kwargs.get('username'),
 			"email": kwargs.get('email'),
-			"enabled": 0,
+			"enabled": 1,
 			"is_customer": 1,
 			"customer": cst,
 			"phone": kwargs.get('phone'),
