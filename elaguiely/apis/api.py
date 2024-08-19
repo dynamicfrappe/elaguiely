@@ -65,12 +65,19 @@ def get_url():
 @frappe.whitelist(allow_guest = 0)
 def profile(*args , **kwargs):
 	user = frappe.session.user
-	customer = frappe.get_value("User", user , 'customer')
-	profile = frappe.db.sql(f""" select customer_name , customer_type , mobile_no , email_id , primary_address as address , customer_primary_address from `tabCustomer` where name = '{customer}' """ , as_dict = 1 )
-	if profile:
-		if profile[0].get('customer_primary_address'):
-			address = frappe.get_value("Address" , profile[0].get('customer_primary_address') , ['address_line1 as address_line' , 'city as area' , 'state as city' , 'country'],as_dict=1)
-			profile[0]['address'] = address
+	if user:
+		customer = frappe.get_value("User", user , 'customer')
+		profile = frappe.db.sql(f""" select customer_name , customer_type , mobile_no , email_id , primary_address as address , customer_primary_address from `tabCustomer` where name = '{customer}' """ , as_dict = 1 )
+		if profile:
+			if profile[0].get('customer_primary_address'):
+				address = frappe.get_value("Address" , profile[0].get('customer_primary_address') , ['address_line1 as address_line' , 'city as area' , 'state as city' , 'country'],as_dict=1)
+				profile[0]['address'] = address
 
-	return profile
+		frappe.response["message"] =_("the profile data")
+		frappe.local.response["data"] = profile
+		frappe.local.response['http_status_code'] = 200
+	else:
+		frappe.local.response['http_status_code'] = 400
+		frappe.response["message"] =_("Error with auth")
+		frappe.local.response['data'] = {}
 
