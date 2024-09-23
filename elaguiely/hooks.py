@@ -139,9 +139,22 @@ doc_events = {
 # Overriding Methods
 # ------------------------------
 #
-# override_whitelisted_methods = {
-#	"frappe.desk.doctype.event.event.get_events": "elaguiely.event.get_events"
-# }
+override_whitelisted_methods = {
+	"AllZone": "elaguiely.ts_api.get_all_zones", 
+	"AllCity": "elaguiely.ts_api.get_all_cities", 
+	"ItemsPrice": "elaguiely.ts_api.get_items_prices", 
+	"AllCusClass": "elaguiely.ts_api.get_customer_class", 
+	"CustomerReg": "elaguiely.ts_api.get_customer_profile",  
+	"Category": "elaguiely.ts_api.get_categories", 
+	"Supplier": "elaguiely.ts_api.get_all_suppliers", 
+	"CategoryBySupplier": "elaguiely.ts_api.get_category_by_supplier", 
+	"BestSellerItems": "elaguiely.ts_api.get_best_seller_items", 
+	"EmployeeInvoice": "elaguiely.ts_api.get_invoice", 
+	"Survey": "elaguiely.ts_api.evaluate_order", 
+	"OrderHistory": "elaguiely.ts_api.cancel_order", 
+	"ItemsSearch": "elaguiely.ts_api.get_items_serach_list", 
+	"AllGov": "elaguiely.ts_api.get_all_governs", 
+}
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,
