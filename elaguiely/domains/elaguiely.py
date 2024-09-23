@@ -112,12 +112,19 @@ data = {
         ] ,
         "Brand" :[
             {
-               "fieldname"    : "arabic_name",
-               "fieldtype"    : "Data",
+               "fieldname" : "arabic_name",
+               "fieldtype" : "Data",
                "insert_after" : "brand",
-               "label"        : _("Arabic Name"),
-               "reqd" : True
-                
+               "label" : _("Arabic Name"),
+               "reqd" : 1
+            },
+            {
+               "fieldname" : "sub_catgories",
+               "fieldtype" : "Table",
+               "insert_after" : "description",
+               "label" : _("Sub Categories"),
+                "options": "Brand Categories",
+               "reqd" : 0
             }
         ] ,
         "Pricing Rule":[
@@ -174,8 +181,57 @@ data = {
             },
 
         ]
-
-
     },
+
+    "properties": [
+        {
+            "doctype":"Address",
+            "doctype_or_field":"DocField",
+            "fieldname":"city",
+            "property":"options",
+            "property_type":"Small Text",
+            "value": "City",
+        },
+        {
+            "doctype":"Address",
+            "doctype_or_field":"DocField",
+            "fieldname":"city",
+            "property":"fieldtype",
+            "property_type":"Select",
+            "value": "Link",
+        },
+        {
+            "doctype":"Address",
+            "doctype_or_field":"DocField",
+            "fieldname":"county",
+            "property":"options",
+            "property_type":"Small Text",
+            "value": "Zone",
+        },
+        {
+            "doctype":"Address",
+            "doctype_or_field":"DocField",
+            "fieldname": "county",
+            "property":"fieldtype",
+            "property_type":"Select",
+            "value": "Link",
+        },
+        {
+            "doctype":"Address",
+            "doctype_or_field":"DocField",
+            "fieldname":"state",
+            "property":"options",
+            "property_type":"Small Text",
+            "value": "Governorate",
+        },
+        {
+            "doctype":"Address",
+            "doctype_or_field":"DocField",
+            "fieldname":"state",
+            "property":"fieldtype",
+            "property_type":"Select",
+            "value": "Link",
+        },
+    ],
 #  'on_setup': 'elaguiely.install.setup'
 }
