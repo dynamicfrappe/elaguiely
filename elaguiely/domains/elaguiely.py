@@ -27,7 +27,6 @@ data = {
                 "insert_after": "is_customer",
                 "options":"Customer" ,
                 "read_only" : 1  ,
-            
             },
           
             
@@ -231,6 +230,22 @@ data = {
             "property":"fieldtype",
             "property_type":"Select",
             "value": "Link",
+        },
+        {
+            "doctype": "User",
+            "doctype_or_field": "DocField",
+            "fieldname": "email",
+            "property": "reqd",
+            "property_type": "Check",
+            "value": "0",
+        },
+        {
+            "doctype": "User",
+            "doctype_or_field": "DocField",
+            "fieldname": "email",
+            "property": "options",
+            "property_type": "Small Text",
+            "value": "",
         },
     ],
 #  'on_setup': 'elaguiely.install.setup'

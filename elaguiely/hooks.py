@@ -142,18 +142,22 @@ doc_events = {
 override_whitelisted_methods = {
 	"AllZone": "elaguiely.ts_api.get_all_zones", 
 	"AllCity": "elaguiely.ts_api.get_all_cities", 
-	"ItemsPrice": "elaguiely.ts_api.get_items_prices", 
-	"AllCusClass": "elaguiely.ts_api.get_customer_class", 
+	"AllCusClass": "elaguiely.ts_api.get_customer_class",
 	"CustomerReg": "elaguiely.ts_api.get_customer_profile",  
-	"Category": "elaguiely.ts_api.get_categories", 
-	"Supplier": "elaguiely.ts_api.get_all_suppliers", 
-	"CategoryBySupplier": "elaguiely.ts_api.get_category_by_supplier", 
-	"BestSellerItems": "elaguiely.ts_api.get_best_seller_items", 
+	"BestSellerItems": "elaguiely.ts_api.get_best_seller_items",
 	"EmployeeInvoice": "elaguiely.ts_api.get_invoice", 
 	"Survey": "elaguiely.ts_api.evaluate_order", 
 	"OrderHistory": "elaguiely.ts_api.cancel_order", 
 	"ItemsSearch": "elaguiely.ts_api.get_items_serach_list", 
-	"AllGov": "elaguiely.ts_api.get_all_governs", 
+	"AllGov": "elaguiely.ts_api.get_all_governs",
+
+	# Auth Routing
+	"login_user": "elaguiely.apis_v1.auth.login",
+	"CustomerReg": "elaguiely.apis_v1.auth.register",
+	"ItemsPrice": "elaguiely.apis_v1.item.get_items_prices",
+	"Supplier": "elaguiely.apis_v1.supplier.get_all_suppliers",
+	"CategoryBySupplier": "elaguiely.apis_v1.supplier.get_category_by_supplier",
+	"Category": "elaguiely.apis_v1.category.get_categories"
 }
 #
 # each overriding function accepts a `data` argument;
