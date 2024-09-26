@@ -20,7 +20,6 @@ def generate_jwt_token(user):
 @frappe.whitelist(allow_guest=True)
 def login(UserName=None, Password=None, OneSignalUserID=None, deviceKey=None):
 	mobile, password = UserName, Password
-
 	# Check if the mobile or password is missing
 	if not mobile or not password:
 		frappe.local.response["http_status_code"] = 400
@@ -50,13 +49,15 @@ def login(UserName=None, Password=None, OneSignalUserID=None, deviceKey=None):
 
 	# Fetch user details for the response
 	user_doc = frappe.get_doc("User", user)
-
+	print('user_doc ==> ', user_doc)
+	customer = frappe.get_doc("Customer", user_doc.customer)
+	print(customer)
 	frappe.local.response['data'] = {
 		"msg": 0,
 		"cuslist": [
 			{
-				"Cus_Id": 0,
-				"Id": 28362,
+				"Cus_Id": customer.name,
+				"Id": customer.name,
 				"Location_lat": None,
 				"Location_long": None,
 				"CustomerName": "test3",

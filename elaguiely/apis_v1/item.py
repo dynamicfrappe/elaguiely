@@ -299,6 +299,8 @@ def get_items_prices(fav=None, customer_id=None, MainGroupID=None, SubGroup1ID=N
                         item.item_name,
                         item.stock_uom,
                         item.arabic_name,
+                        item.item_group,
+                        item.brand,
                         unit1.conversion_factor AS unit1_factor,
                         unit2.conversion_factor AS unit2_factor,
                         unit3.conversion_factor AS unit3_factor,
@@ -330,6 +332,7 @@ def get_items_prices(fav=None, customer_id=None, MainGroupID=None, SubGroup1ID=N
             if filters:
                 sql_query += " AND " + " AND ".join([f"item.{key} = '{value}'" for key, value in filters.items()])
             items = frappe.db.sql(sql_query, as_dict=True)
+            print(items)
             response = []
             for item in items:
                 unit_2_price = None
@@ -342,21 +345,21 @@ def get_items_prices(fav=None, customer_id=None, MainGroupID=None, SubGroup1ID=N
                     "Unit1Name": item['unit1_name'] if item['unit1_name'] else item['stock_uom'],
                     "Unit1NameEng": item['unit1_name'] if item['unit1_name'] else item['stock_uom'],
                     "U_Code1": item['unit1_name'] if item['unit1_name'] else item['stock_uom'],
-                    "Unit1OrignalPrice": None,
-                    "Unit1Price": item['unit1_price'] if item['unit1_price'] else 20.00,
+                    "Unit1OrignalPrice": item['unit1_price'] if item['unit1_price'] else None,
+                    "Unit1Price": item['unit1_price'] if item['unit1_price'] else None,
                     "Unit1Point": None,
                     "Unit1Factor": item['unit1_factor'] if item['unit1_factor'] else None,
                     "Unit2Name": item['unit2_name'] if item['unit2_name'] else None,
                     "Unit2NameEng": item['unit2_name'] if item['unit2_name'] else None,
                     "U_Code2": item['unit2_name'] if item['unit2_name'] else None,
-                    "Unit2OrignalPrice": None,
+                    "Unit2OrignalPrice": unit_2_price,
                     "Unit2Price": unit_2_price,
                     "Unit2Point": None,
                     "Unit2Factor": item['unit2_factor'] if item['unit2_factor'] else None,
                     "Unit3Name": item['unit3_name'] if item['unit3_name'] else None,
                     "Unit3NameEng": item['unit3_name'] if item['unit3_name'] else None,
                     "U_Code3": item['unit3_name'] if item['unit3_name'] else None,
-                    "Unit3OrignalPrice": None,
+                    "Unit3OrignalPrice": unit_3_price,
                     "Unit3Price": unit_3_price,
                     "Unit3Point": None,
                     "Unit3Factor": item['unit3_factor'] if item['unit3_factor'] else None,
@@ -370,7 +373,7 @@ def get_items_prices(fav=None, customer_id=None, MainGroupID=None, SubGroup1ID=N
                     "OrignalPrice": None,
                     "SellUnitOrignalPrice": None,
                     "SellUnitPoint": None,
-                    "ActualPrice": item['unit1_price'] if item['unit1_price'] else 20.00,
+                    "ActualPrice": item['unit1_price'],
                     "ItemTotalprice": None,
                     "SellUnit": None,
                     "SellUnitName": None,
@@ -378,8 +381,8 @@ def get_items_prices(fav=None, customer_id=None, MainGroupID=None, SubGroup1ID=N
                     "DiscountPrice": None,
                     "DiscountPercent": None,
                     "TotalQuantity": None,
-                    "MG_code": None,
-                    "SG_Code": None,
+                    "MG_code": item['item_group'] if item['item_group'] else None,
+                    "SG_Code": item['brand'] if item['brand'] else None,
                     "IsFavourite": None,
                     "SellPoint": None,
                     "OrignalSellPoint": None,

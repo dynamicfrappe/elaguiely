@@ -32,13 +32,14 @@ def get_all_categories(**kwargs):
 @frappe.whitelist(allow_guest=True)
 @jwt_required
 def get_supplier_by_category(supplierid, **kwargs):
+    print('get_supplier_by_category')
+    print(supplierid)
     supplier = frappe.get_doc("Brand", supplierid)
     if not supplier:
         return {"message": "Invalid", "data": []}
     categories = frappe.get_list(
         "Brand Categories", fields=['name'], filters=[{'parent': supplier.name}]
     )
-    print('categories ==> ', categories)
     responses = []
     for category in categories:
         category["id"] = category.get("name")
@@ -46,7 +47,7 @@ def get_supplier_by_category(supplierid, **kwargs):
         category["nameEng"] = category.get("name_eng")
         category["icon"] = category.get("image")
         category["mgCode"] = None
-        category["sgCode"] = None
+        category["sgCode"] = supplierid
         category["sg2Code"] = None
         responses.append(category)
     frappe.local.response.data = responses

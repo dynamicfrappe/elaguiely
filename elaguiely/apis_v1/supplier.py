@@ -45,8 +45,8 @@ def get_category_by_supplier(supplierid, **kwargs):
         category["name"] = category.get("name")
         category["nameEng"] = category.get("name_eng")
         category["icon"] = category.get("image")
-        category["mgCode"] = None
-        category["sgCode"] = None
+        category["mgCode"] = category.get("name")
+        category["sgCode"] = supplierid
         category["sg2Code"] = None
         responses.append(category)
     frappe.local.response.data = responses
