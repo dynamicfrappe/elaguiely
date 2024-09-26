@@ -150,6 +150,7 @@ override_whitelisted_methods = {
 	"OrderHistory": "elaguiely.ts_api.cancel_order", 
 	"ItemsSearch": "elaguiely.ts_api.get_items_serach_list", 
 	"AllGov": "elaguiely.ts_api.get_all_governs",
+	"SaveShoppingCart" : "elaguiely.ts_api.save_shopping_cart",
 
 	# Auth Routing
 	"login_user": "elaguiely.apis_v1.auth.login",
@@ -159,6 +160,7 @@ override_whitelisted_methods = {
 	"CategoryBySupplier": "elaguiely.apis_v1.supplier.get_category_by_supplier",
 	"Category": "elaguiely.apis_v1.category.get_categories"
 }
+
 #
 # each overriding function accepts a `data` argument;
 # generated from the base implementation of the doctype dashboard,

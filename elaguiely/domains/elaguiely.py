@@ -31,6 +31,16 @@ data = {
           
             
             ],
+            "Customer":[
+                {
+                    "label" : "Cart ID",
+                    "fieldname": "cart_id",
+                    "fieldtype": "Link",
+                    "insert_after": "tax_category",
+                    "options": "Cart" ,
+                    "read_only" : 1  ,
+                }
+            ],
             "Address":
             [
                 {

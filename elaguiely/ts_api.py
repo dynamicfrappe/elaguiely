@@ -1,6 +1,7 @@
 import frappe
 from frappe import _
 import requests
+import json
 
 # done
 @frappe.whitelist(allow_guest = True)
@@ -312,4 +313,50 @@ def cancel_order():
             
     except Exception as e:
         pass
+
+
+
+@frappe.whitelist(allow_guest = True)
+def save_shopping_cart():
+    try:
+        cart_data = json.loads(frappe.request.data)
+        cart_id = cart.data.get_doc("CID")
+
+        if cart_id:
+            cart_doc = frappe.get_doc("Shopping Cart", existing_cart)
+
+            existing_product = frappe.db.exists("Cart Item", {
+                "item": product_data.get("id"),
+                "parent": cart_doc.name
+            })
+
+            if existing_product:
+                cart_item = frappe.get_doc("Cart Item", existing_product)
+                cart_item.qty += product_data.get("totalquantity", 0)
+                cart_item.item_total_price += product_data.get("itemTotalprice", 0.0)
+                cart_item.total_discount += product_data.get("discountpercent", 0.0)
+                cart_item.total = cart_item.item_total_price - cart_item.total_discount
+                cart_item.save()
+            
+            else:
+                cart_doc.append("items", {
+                    "item": product_data.get("id"),
+                    "image": product_data.get("previewimage"),
+                    "arabic_name": product_data.get("name"),
+                    "description": product_data.get("description"),
+                    "uom": product_data.get("sellUnit"),
+                    "rate": product_data.get("actualprice", 0.0),
+                    "item_total_price": product_data.get("itemTotalprice", 0.0),
+                    "qty": product_data.get("totalquantity", 0),
+                    "total_discount": product_data.get("discountpercent", 0.0),
+                    "total": product_data.get("itemTotalprice", 0.0)
+                })
+                cart_doc.save()
+
+        else:
+            return "Cart Not Exists"
+       
+    except Exception as e:
+        pass
+
 
