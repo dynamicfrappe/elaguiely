@@ -153,7 +153,7 @@ def get_category_by_supplier(supplierid):
          
     frappe.local.response.data = response 
 
-# Working...
+
 @frappe.whitelist(allow_guest = True)
 def get_items_prices(main_group_id = None, sub_group1_id = None, sub_group2_id = None, supplier_id = None, customer_id = None, bouns_id = None, fav = False ):
     try:
@@ -245,7 +245,7 @@ def get_items_prices(main_group_id = None, sub_group1_id = None, sub_group2_id =
     except Exception as e:
         return { 'status_code': 404, 'message': str(e) }
 
-# Working...
+
 @frappe.whitelist(allow_guest = True)
 def get_best_seller_items():
     try:
@@ -257,7 +257,7 @@ def get_best_seller_items():
     except Exception as e:
         return { 'status_code': 404, 'message': str(e) }
 
-# Working...
+
 @frappe.whitelist(allow_guest = True)
 def get_categories():
     try:
@@ -269,7 +269,7 @@ def get_categories():
     except Exception as e:
         frappe.local.response['message'] = str(e)
 
-# done
+
 @frappe.whitelist(allow_guest = True)
 def get_items_serach_list():
     try:  
@@ -315,7 +315,7 @@ def cancel_order():
         pass
 
 
-
+# working ...
 @frappe.whitelist(allow_guest = True)
 def save_shopping_cart():
     try:
@@ -333,32 +333,36 @@ def save_shopping_cart():
                 "parent": cart_doc.name
             })
             
-            print(product_data.get("id"))
-            print(existing_product)
             if existing_product:
                 cart_item = frappe.get_doc("Cart Item", existing_product)
-
+                print(cart_item.parent)
                 cart_item.qty = product_data.get("totalquantity", 0)
                 frappe.db.set_value("Cart Item", existing_product, {"rate": product_data.get("actualprice", 0)})
                 frappe.db.set_value("Cart Item", existing_product, {"qty": product_data.get("totalquantity", 0)})
                 frappe.db.commit()
             
             else:
+                # cart_doc.append("cart_item", {
+                #     "item": product_data.get("id"),
+                #     "rate": product_data.get("actualprice"),
+                #     "qty": product_data.get("totalquantity"),
+                #     "description": product_data.get("description")
+                # })
+                # cart_doc.save()
+
                 cart_item = frappe.get_doc({
                     "doctype": "Cart Item",
                     "parent": cart_doc.name,
                     "parenttype": "Cart",
-                    "parentfield": "items",
+                    "parentfield": "cart_item",
                     "item": product_data.get("id"),
                     "rate": product_data.get("actualprice"),
                     "qty": product_data.get("totalquantity")
                 })
                 cart_item.insert()
-                print("item is inserted successfully")
                 frappe.db.commit()
-                cart_doc.save()
-                print('cart ==> ', cart)
-                print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                
+                print("Item is inserted successfully.")
 
         else:
             print("Cart Not Exists")
