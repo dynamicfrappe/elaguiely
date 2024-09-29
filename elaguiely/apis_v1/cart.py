@@ -117,11 +117,11 @@ def cart_details(**kwargs):
         frappe.local.response["data"] = response_data
 
     except frappe.DoesNotExistError:
-        frappe.local.response["message"] = _("Customer does not exist")
+        frappe.local.response["data"] = _("Customer does not exist")
         frappe.local.response['http_status_code'] = 404
 
     except Exception as e:
-        frappe.local.response["message"] = _("An error occurred")
+        frappe.local.response["data"] = _("An error occurred")
         frappe.local.response['http_status_code'] = 500
         frappe.local.response["error"] = str(e)
 

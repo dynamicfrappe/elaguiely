@@ -377,47 +377,47 @@ def get_items_prices():
     for item in items:
         # Fetch prices related to the item
         uom_prices = get_item_prices(item['name'])
+        if any([uom_prices[0].get('name'), uom_prices[1].get('name'), uom_prices[2].get('name')]):
+            # Structure the item details with multiple UOMs
+            item_details = {
+                "Id": item['name'],
+                "PreviewImage": item.get('image', ''),
+                "NameEng": item.get('item_name', ''),
+                "Name": item['arabic_name'],
+                "Unit1Name": uom_prices[0]['name'],
+                "Unit1OrignalPrice": uom_prices[0]['price'],
+                "Unit1Price": uom_prices[0]['price'],
+                "Unit1Factor": uom_prices[0]['factor'],
+                "Unit2Name": uom_prices[1]['name'],
+                "Unit2OrignalPrice": uom_prices[1]['price'],
+                "Unit2Price": uom_prices[1]['price'],
+                "Unit2Factor": uom_prices[1]['factor'],
+                "Unit3Name": uom_prices[2]['name'],
+                "Unit3OrignalPrice": uom_prices[2]['price'],
+                "Unit3Price": uom_prices[2]['price'],
+                "Unit3Factor": uom_prices[2]['factor'],
+                "SummaryEng": None,
+                "DescriptionEng": None,
+                "Summary": None,
+                "Description": item.get('description', ''),
+                "price": None,
+                "FromItemCard": None,
+                "SellUnitFactor": None,
+                "OrignalPrice": None,
+                "SellUnitOrignalPrice": None,
+                "SellUnitPoint": None,
+                "ActualPrice": uom_prices[0]['price'] if uom_prices[0]['price'] else None,
+                "ItemTotalprice": None,
+                "MG_code": item['item_group'],
+                "SG_Code": item['brand'],
+                "IsFavourite": None,
+                "SellPoint": None,
+                "OrignalSellPoint": None,
+                "MinSalesOrder": None,
+                "Isbundle": None,
+                "NotChangeUnit": None
+            }
 
-        # Structure the item details with multiple UOMs
-        item_details = {
-            "Id": item['name'],
-            "PreviewImage": item.get('image', ''),
-            "NameEng": item.get('item_name', ''),
-            "Name": item['arabic_name'],
-            "Unit1Name": uom_prices[0]['name'],
-            "Unit1OrignalPrice": uom_prices[0]['price'],
-            "Unit1Price": uom_prices[0]['price'],
-            "Unit1Factor": uom_prices[0]['factor'],
-            "Unit2Name": uom_prices[1]['name'],
-            "Unit2OrignalPrice": uom_prices[1]['price'],
-            "Unit2Price": uom_prices[1]['price'],
-            "Unit2Factor": uom_prices[1]['factor'],
-            "Unit3Name": uom_prices[2]['name'],
-            "Unit3OrignalPrice": uom_prices[2]['price'],
-            "Unit3Price": uom_prices[2]['price'],
-            "Unit3Factor": uom_prices[2]['factor'],
-            "SummaryEng": None,
-            "DescriptionEng": None,
-            "Summary": None,
-            "Description": item.get('description', ''),
-            "price": None,
-            "FromItemCard": None,
-            "SellUnitFactor": None,
-            "OrignalPrice": None,
-            "SellUnitOrignalPrice": None,
-            "SellUnitPoint": None,
-            "ActualPrice": uom_prices[0]['price'] if uom_prices[0]['price'] else None,
-            "ItemTotalprice": None,
-            "MG_code": item['item_group'],
-            "SG_Code": item['brand'],
-            "IsFavourite": None,
-            "SellPoint": None,
-            "OrignalSellPoint": None,
-            "MinSalesOrder": None,
-            "Isbundle": None,
-            "NotChangeUnit": None
-        }
+            items_with_uom_and_prices.append(item_details)
 
-        items_with_uom_and_prices.append(item_details)
-
-    return items_with_uom_and_prices
+    frappe.local.response["data"] = items_with_uom_and_prices
