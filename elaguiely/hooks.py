@@ -140,15 +140,15 @@ doc_events = {
 # ------------------------------
 #
 override_whitelisted_methods = {
-	"AllZone": "elaguiely.ts_api.get_all_zones", 
-	"AllCity": "elaguiely.ts_api.get_all_cities", 
+	"AllZone": "elaguiely.ts_api.get_all_zones",
+	"AllCity": "elaguiely.ts_api.get_all_cities",
 	"AllCusClass": "elaguiely.ts_api.get_customer_class",
-	"CustomerReg": "elaguiely.ts_api.get_customer_profile",  
+	"CustomerReg": "elaguiely.ts_api.get_customer_profile",
 	"BestSellerItems": "elaguiely.ts_api.get_best_seller_items",
-	"EmployeeInvoice": "elaguiely.ts_api.get_invoice", 
-	"Survey": "elaguiely.ts_api.evaluate_order", 
-	"OrderHistory": "elaguiely.ts_api.cancel_order", 
-	"ItemsSearch": "elaguiely.ts_api.get_items_serach_list", 
+	"EmployeeInvoice": "elaguiely.ts_api.get_invoice",
+	"Survey": "elaguiely.ts_api.evaluate_order",
+	"OrderHistory": "elaguiely.ts_api.cancel_order",
+	"ItemsSearch": "elaguiely.ts_api.get_items_serach_list",
 	"AllGov": "elaguiely.ts_api.get_all_governs",
 	# "SaveShoppingCart" : "elaguiely.ts_api.save_shopping_cart",
 
@@ -161,7 +161,8 @@ override_whitelisted_methods = {
 	"Category": "elaguiely.apis_v1.category.get_categories",
 	"SaveShoppingCart" : "elaguiely.apis_v1.cart.save_shopping_cart",
 	"Cart": "elaguiely.apis_v1.cart.cart_details",
-	"CreateOrder": "elaguiely.apis_v1.sales_order.request_sales_order"
+	"CreateOrder": "elaguiely.apis_v1.sales_order.request_sales_order",
+	"DeleteShoppingCart": "elaguiely.apis_v1.sales_order.clear_shopping_cart",
 }
 
 #

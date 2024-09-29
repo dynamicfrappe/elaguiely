@@ -3,6 +3,7 @@ from datetime import datetime
 import frappe
 from frappe import _
 
+from elaguiely.apis_v1.jwt_decorator import jwt_required
 from elaguiely.apis_v1.utils import get_item_prices
 
 
@@ -82,9 +83,7 @@ from elaguiely.apis_v1.utils import get_item_prices
 @frappe.whitelist(allow_guest=True)
 # @jwt_required
 def request_sales_order(**kwargs):
-    print('request_sales_order')
     try:
-        # Extract CustomerID from the request parameters
         customer_id = kwargs.get("CustomerID")
         if not customer_id:
             frappe.local.response["message"] = _("CustomerID is required")
@@ -111,17 +110,17 @@ def request_sales_order(**kwargs):
         sales_order.transaction_date = frappe.utils.nowdate()  # You can customize this
         print(kwargs.get("DeliveryDate"))
         # Convert to datetime object
-        date_object = datetime.strptime(kwargs.get("DeliveryDate"), "%d/%m/%Y")
-
+        date_object = datetime.strptime(kwargs.get("DeliveryDate"), "%Y-%m-%d")
+        print(date_object)
         # Format as YYYY-MM-DD
         formatted_date = date_object.strftime("%Y-%m-%d")
-
+        print(formatted_date)
         sales_order.delivery_date = formatted_date
 
         # Add cart items to the Sales Order items table
         for cart_item in cart.get("cart_item"):  # Replace 'items' with the correct field if different
             uom_prices = get_item_prices(cart_item.item)  # Assuming you get the UOM prices this way
-
+            print(uom_prices)
             sales_order.append("items", {
                 "item_code": cart_item.item,  # Ensure this field matches the actual one in your Cart item table
                 "qty": cart_item.qty,
@@ -131,20 +130,16 @@ def request_sales_order(**kwargs):
                 "stock_uom": uom_prices[0].get('name') if uom_prices else cart_item.uom,
                 "description": cart_item.get('description') or cart_item.get('item_name')
             })
-
-        # Insert the Sales Order into the database
-        sales_order.insert()
+            # print('sales_order ==> ', sales_order)
+        sales_order.insert(ignore_permissions=True)
         sales_order.submit()  # Submitting the order (optional, depending on your workflow)
-        print('cart ==> ', cart)
         # Clear the Cart after the Sales Order is created
         cart.set("cart_item", [])  # Clear the items list
-        print(cart.cart_item)
         cart.save()  # Save the changes to the cart
         frappe.db.commit()
-
         # Prepare response data
         frappe.local.response['http_status_code'] = 200
-        frappe.local.response["message"] = _("Sales Order created successfully")
+        frappe.local.response["data"] = _("Sales Order created successfully")
         frappe.local.response["sales_order"] = sales_order.name
 
     except frappe.DoesNotExistError:

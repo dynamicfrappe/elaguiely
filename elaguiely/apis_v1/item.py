@@ -364,7 +364,8 @@ from .utils import get_item_prices
 
 
 @frappe.whitelist(allow_guest=True)
-def get_items_prices():
+@jwt_required
+def get_items_prices(**kwargs):
     items_with_uom_and_prices = []
 
     # Get all items
@@ -378,6 +379,7 @@ def get_items_prices():
         # Fetch prices related to the item
         uom_prices = get_item_prices(item['name'])
         if any([uom_prices[0].get('name'), uom_prices[1].get('name'), uom_prices[2].get('name')]):
+
             # Structure the item details with multiple UOMs
             item_details = {
                 "Id": item['name'],
@@ -385,14 +387,20 @@ def get_items_prices():
                 "NameEng": item.get('item_name', ''),
                 "Name": item['arabic_name'],
                 "Unit1Name": uom_prices[0]['name'],
+                "Unit1NameEng": uom_prices[0]['name'],
+                "U_Code1": uom_prices[0]['name'],
                 "Unit1OrignalPrice": uom_prices[0]['price'],
                 "Unit1Price": uom_prices[0]['price'],
                 "Unit1Factor": uom_prices[0]['factor'],
+                "U_Code2": uom_prices[1]['name'],
                 "Unit2Name": uom_prices[1]['name'],
+                "Unit2NameEng": uom_prices[1]['name'],
                 "Unit2OrignalPrice": uom_prices[1]['price'],
                 "Unit2Price": uom_prices[1]['price'],
                 "Unit2Factor": uom_prices[1]['factor'],
+                "U_Code3": uom_prices[0]['name'],
                 "Unit3Name": uom_prices[2]['name'],
+                "Unit3NameEng": uom_prices[2]['name'],
                 "Unit3OrignalPrice": uom_prices[2]['price'],
                 "Unit3Price": uom_prices[2]['price'],
                 "Unit3Factor": uom_prices[2]['factor'],
@@ -405,6 +413,9 @@ def get_items_prices():
                 "SellUnitFactor": None,
                 "OrignalPrice": None,
                 "SellUnitOrignalPrice": None,
+                "SellUnit": item.get('uom'),
+                "SellUnitName": item.get('uom'),
+                "SellUnitNameEng": item.get('uom'),
                 "SellUnitPoint": None,
                 "ActualPrice": uom_prices[0]['price'] if uom_prices[0]['price'] else None,
                 "ItemTotalprice": None,
@@ -417,6 +428,34 @@ def get_items_prices():
                 "Isbundle": None,
                 "NotChangeUnit": None
             }
+            customer_id = kwargs.get("CustomerID")
+            if not customer_id:
+                frappe.local.response["message"] = _("CustomerID is required")
+                frappe.local.response['http_status_code'] = 400
+                return
+
+            # Fetch the customer document
+            customer = frappe.get_doc("Customer", customer_id)
+            cart = frappe.get_doc("Cart", {'customer': customer.name}, fields=['*'])
+            # print(customer)
+            # print(cart)
+            # print(cart.cart_item)
+            # print(item['item_name'])
+            if cart:
+                print(cart.cart_item)
+                for c_i in cart.cart_item:
+                    print('here')
+                    # print(cart_item.item)
+                    # print(cart_item.item.name)
+                    print(c_i.name)
+                    print(c_i.item_name)
+                    print(item['name'])
+                    print(item['item_name'])
+                    # print(item['item_code'])
+                    print(c_i.item_name == item['name'])
+                    if c_i.item_name == item['name']:
+                        print('in cart')
+
 
             items_with_uom_and_prices.append(item_details)
 
