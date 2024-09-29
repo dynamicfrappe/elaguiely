@@ -7,7 +7,11 @@ from elaguiely.apis_v1.jwt_decorator import jwt_required
 @jwt_required
 def get_all_suppliers(**kwargs):
     try:
-        suppliers = frappe.db.get_list("Brand", fields=["name", "arabic_name", "image"])
+        suppliers = frappe.db.get_list(
+            "Brand",
+            fields=["name", "arabic_name", "image"],
+            ignore_permissions=True
+        )
         if not suppliers:
             return {"status": "success", "data": []}
         response = []
@@ -36,9 +40,11 @@ def get_category_by_supplier(supplierid, **kwargs):
     if not supplier:
         return {"message": "Invalid", "data": []}
     categories = frappe.get_list(
-        "Brand Categories", fields=['name'], filters=[{'parent': supplier.name}]
+        "Brand Categories",
+        fields=['name'],
+        filters=[{'parent': supplier.name}],
+        ignore_permissions=True
     )
-    print('categories ==> ', categories)
     responses = []
     for category in categories:
         category["id"] = category.get("name")
