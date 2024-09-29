@@ -5,6 +5,7 @@ import json
 from frappe import _
 
 from elaguiely.apis_v1.jwt_decorator import jwt_required
+from elaguiely.apis_v1.utils import get_item_prices
 from elaguiely.elaguiely.functions import (create_customer ,
 					   								 create_cart ,
 														 create_favorite)
@@ -33,7 +34,6 @@ from elaguiely.apis.item import get_items
 @frappe.whitelist(allow_guest=True)
 @jwt_required
 def cart_details(**kwargs):
-    print('cart details')
     try:
         # Extract CustomerID from the request parameters
         customer_id = kwargs.get("CustomerID")
@@ -49,36 +49,38 @@ def cart_details(**kwargs):
             frappe.local.response['http_status_code'] = 404
             return
         cart = frappe.get_doc("Cart", {'customer': customer.name}, fields=['*'])
-        print('cart ==> ', cart)
-        print('cart ==> ', cart.cart_item)
+        if not cart:
+            frappe.local.response["data"] = _("Cart not found")
+            return
         products = []
         for item in cart.cart_item:
+            uom_prices = get_item_prices(item.item)
             product = {
                 "Id": item.get('name'),
                 "PreviewImage": item.get('image'),
                 "NameEng": item.get('item_name'),
                 "Name": item.get('arabic_name'),
-                "Unit1Name": item.get('uom'),
-                "Unit1NameEng": item.get('uom'),
-                "U_Code1": item.get('uom'),
-                "Unit1OrignalPrice": float(item.get('rate')),
-                "Unit1Price": float(item.get('rate')),
+                "Unit1Name": uom_prices[0]['name'],
+                "Unit1NameEng": uom_prices[0]['name'],
+                "U_Code1": uom_prices[0]['name'],
+                "Unit1OrignalPrice": uom_prices[0]['price'],
+                "Unit1Price": uom_prices[0]['price'],
                 "Unit1Point": 1.00,
-                "Unit1Factor": item.get('unit2_factor'),
-                "Unit2Name": item.get('unit2_name'),
-                "Unit2NameEng": item.get('unit2_name'),
-                "U_Code2": item.get('unit2_name'),
-                "Unit2OrignalPrice": float(item.get('rate')),
-                "Unit2Price": float(item.get('rate')),
-                "Unit2Point": float(item.get('rate')),
-                "Unit2Factor": float(item.get('rate')),
-                "Unit3Name": item.get('unit3_name'),
-                "Unit3NameEng": item.get('unit3_name'),
-                "U_Code3": item.get('unit3_name'),
-                "Unit3OrignalPrice": float(item.get('rate')),
-                "Unit3Price": float(item.get('rate')),
-                "Unit3Point": float(item.get('rate')),
-                "Unit3Factor": float(item.get('rate')),
+                "Unit1Factor": uom_prices[0]['factor'],
+                "Unit2Name": uom_prices[1]['name'],
+                "Unit2NameEng": uom_prices[1]['name'],
+                "U_Code2": uom_prices[1]['name'],
+                "Unit2OrignalPrice": uom_prices[1]['price'],
+                "Unit2Price": uom_prices[1]['price'],
+                "Unit2Point": 1.00,
+                "Unit2Factor": uom_prices[1]['factor'],
+                "Unit3Name": uom_prices[2]['name'],
+                "Unit3NameEng": uom_prices[2]['name'],
+                "U_Code3": uom_prices[2]['name'],
+                "Unit3OrignalPrice": uom_prices[2]['price'],
+                "Unit3Price": uom_prices[2]['price'],
+                "Unit3Point": 1.00,
+                "Unit3Factor": uom_prices[2]['factor'],
                 "SummaryEng": "None",
                 "DescriptionEng": "None",
                 "Summary": "None",
@@ -106,7 +108,6 @@ def cart_details(**kwargs):
                 "Isbundle": None,
                 "NotChangeUnit": None
             }
-            print('product ==> ', product)
             products.append(product)
         frappe.local.response['http_status_code'] = 200
         response_data = {
@@ -233,57 +234,62 @@ def add_to_cart(item, price=False, qty=False, offer=False, price_list=False, **k
    frappe.local.response["data"] = mapped_response
 
 
-@frappe.whitelist(allow_guest = True)
+@frappe.whitelist(allow_guest=True)
 @jwt_required
 def save_shopping_cart(**kwargs):
     print('save_shopping_cart')
-    # try:
-    print('cart_data ==> ', frappe.request.data)
-    cart_data = json.loads(frappe.request.data)
-    print(cart_data)
-    cart_id = kwargs.get("CID")
-    print('cart_id ==> ', cart_id)
-    # customer_id = cart.data.get_doc("CustomerID")
-    if not cart_id:
-        cart_id = create_shopping_cart()
+    try:
+        cart_data = json.loads(frappe.request.data)
+        customer_id = cart_data.get("CustomerID")
+        customer = frappe.get_doc("Customer", customer_id)
+        cart_id = customer.cart_id
+        print(customer)
+        print(cart_id)
+        if cart_id:
+            cart_doc = frappe.get_doc("Cart", cart_id)
+            cart = frappe.db.exists("Cart", {'name': cart_id})
+            product_data = cart_data.get("Product")
 
-    if cart_id:
-        cart_doc = frappe.get_doc("Cart", {'name': cart_id})
-        print('cart_doc', cart_doc)
-        product = cart_data.get("product")
-        print('product', product)
-        existing_product = frappe.db.exists("Cart Item", {
-            "item": product_data.get("id"),
-            "parent": cart_doc.name
-        })
-        print('existing_product', existing_product)
-        print(existing_product)
+            existing_product = frappe.db.exists("Cart Item", {
+                "item": product_data.get("id"),
+                "parent": cart_doc.name
+            })
 
-        if existing_product:
-            cart_item = frappe.get_doc("Cart Item", existing_product)
-            cart_item.qty += product_data.get("totalquantity", 0)
-            cart_item.item_total_price += product_data.get("itemTotalprice", 0.0)
-            cart_item.total_discount += product_data.get("discountpercent", 0.0)
-            cart_item.total = cart_item.item_total_price - cart_item.total_discount
-            cart_item.save()
+            if existing_product:
+                cart_item = frappe.get_doc("Cart Item", existing_product)
+                print(cart_item.parent)
+                cart_item.qty = product_data.get("totalquantity", 0)
+                frappe.db.set_value("Cart Item", existing_product, {"rate": product_data.get("actualprice", 0)})
+                frappe.db.set_value("Cart Item", existing_product, {"qty": product_data.get("totalquantity", 0)})
+                frappe.db.commit()
+
+            else:
+                # cart_doc.append("cart_item", {
+                #     "item": product_data.get("id"),
+                #     "rate": product_data.get("actualprice"),
+                #     "qty": product_data.get("totalquantity"),
+                #     "description": product_data.get("description")
+                # })
+                # cart_doc.save()
+
+                cart_item = frappe.get_doc({
+                    "doctype": "Cart Item",
+                    "parent": cart_doc.name,
+                    "parenttype": "Cart",
+                    "parentfield": "cart_item",
+                    "item": product_data.get("id"),
+                    "rate": product_data.get("actualprice"),
+                    "qty": product_data.get("totalquantity")
+                })
+                cart_item.insert()
+                frappe.db.commit()
+
+                print("Item is inserted successfully.")
 
         else:
-            cart_doc.append("items", {
-                "item": product_data.get("id"),
-                "image": product_data.get("previewimage"),
-                "arabic_name": product_data.get("name"),
-                "description": product_data.get("description"),
-                "uom": product_data.get("sellUnit"),
-                "rate": product_data.get("actualprice", 0.0),
-                "item_total_price": product_data.get("itemTotalprice", 0.0),
-                "qty": product_data.get("totalquantity", 0),
-                "total_discount": product_data.get("discountpercent", 0.0),
-                "total": product_data.get("itemTotalprice", 0.0)
-            })
-            cart_doc.save()
+            print("Cart Not Exists")
+            return "Cart Not Exists"
 
-    #     else:
-    #         return "Cart Not Exists"
-    #
-    # except Exception as e:
-    #     pass
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        frappe.db.rollback()

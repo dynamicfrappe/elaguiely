@@ -257,3 +257,23 @@ def update_items(fn,*args,**kwargs) :
       frappe.local.response["message"] = _("Success")
       # return items
    return item_func
+
+
+def get_item_prices(item_name):
+   prices = frappe.db.get_list(
+      'Item Price',
+      fields=['uom', 'price_list_rate'],
+      filters={'item_code': item_name}, ignore_permissions=True
+   )
+
+   # Prepare a placeholder for up to 3 UOMs
+   uom_prices = [{'name': None, 'price': None, 'factor': None} for _ in range(3)]
+
+   # Populate UOM data into respective slots (up to 3 UOMs)
+   for idx, price in enumerate(prices[:3]):
+      uom_prices[idx] = {
+         'name': price['uom'],
+         'price': price['price_list_rate'],
+         'factor': 1.0  # You might want to adjust this to reflect the actual factor
+      }
+   return uom_prices
