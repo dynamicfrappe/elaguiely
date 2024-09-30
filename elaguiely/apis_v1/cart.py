@@ -155,5 +155,36 @@ def save_shopping_cart(**kwargs):
         frappe.db.rollback()
 
 
-def clear_shopping_cart():
-    print('clear_shopping_cart')
+@frappe.whitelist(allow_guest=True)
+@jwt_required
+def clear_shopping_cart(**kwargs):
+    customer_id = kwargs.get("customerid")
+    item_code = kwargs.get("ItemCode")  # Get the item code from the request
+    print('item_code ==> ', item_code)
+    try:
+        # Fetch the cart for the specified customer
+        cart = frappe.get_doc("Cart", {'customer': customer_id}, fields=['*'])
+
+        # If an item_code is provided, remove only that item from the cart
+        if item_code != "0":
+            # Filter out the item with the specified item_code from the cart items
+            updated_cart_items = [item for item in cart.get("cart_item") if item.item != item_code]
+            # Set the updated list back to the cart
+            cart.set("cart_item", updated_cart_items)
+        else:
+            # If no item_code is provided, clear the entire cart
+            cart.set("cart_item", [])  # Clear the cart items
+
+        # Save the updated cart
+        cart.save(ignore_permissions=True)
+
+        # Respond with success message
+        frappe.local.response["message"] = _("Cart updated successfully")
+
+    except frappe.DoesNotExistError:
+        # Handle case where the cart or customer does not exist
+        frappe.local.response["http_status_code"] = 404
+        frappe.local.response["message"] = _("Customer or Cart does not exist")
+
+    frappe.db.commit()
+

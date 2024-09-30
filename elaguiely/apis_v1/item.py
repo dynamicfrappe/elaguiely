@@ -9,7 +9,14 @@ from .utils import get_item_prices
 @jwt_required
 def get_items_prices(**kwargs):
     items_with_uom_and_prices = []
-
+    print(kwargs)
+    item_group = kwargs.get('MainGroupID')
+    brand = kwargs.get('SubGroup1ID')
+    filters = {}
+    if item_group:
+        filters['item_group'] = item_group
+    if brand:
+        filters['brand'] = brand
     # Get all items
     items = frappe.get_all(
         'Item',
@@ -17,8 +24,10 @@ def get_items_prices(**kwargs):
             'name', 'item_name', 'item_code', 'arabic_name', 'image', 'description', 'brand', 'item_group',
             'standard_rate', 'stock_uom'
         ],
+        filters=filters,
         ignore_permissions=True
     )
+
 
     for item in items:
         # Fetch prices related to the item
@@ -69,12 +78,13 @@ def get_items_prices(**kwargs):
                 "SellUnitPoint": item.get('stock_uom'),
                 "ActualPrice": default_uom_price['price'] if default_uom_price else 0.00,
                 "ItemTotalprice": None,
+                "TotalQuantity": 1,
                 "MG_code": item['item_group'],
                 "SG_Code": item['brand'],
                 "IsFavourite": None,
                 "SellPoint": None,
                 "OrignalSellPoint": None,
-                "MinSalesOrder": None,
+                "MinSalesOrder": 1,
                 "Isbundle": None,
                 "NotChangeUnit": None
             }

@@ -64,7 +64,7 @@ def get_customer_class():
     try:
         
         response = []
-        customer_groups = frappe.db.get_list("Customer Group", fields = ['name'])
+        customer_groups = frappe.db.get_list("Customer Group", fields = ['name'], ignore_permissions=True)
         for group in customer_groups:
             response.append({
                 "Class_code": group.get('name'), 

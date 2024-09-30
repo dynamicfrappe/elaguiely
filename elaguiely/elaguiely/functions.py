@@ -11,23 +11,21 @@ def get_active_domains():
 
 DOMAINS = get_active_domains()
 
-@frappe.whitelist()
-def create_cart_after_enable_customer(customer):
-	print("done")
+@frappe.whitelist(allow_guest=True)
+def create_cart_after_enable_customer(self, event):
 	existing_cart = frappe.db.exists({
 		"doctype": "Cart",
-		"name": customer 
+		"name": self.name
 	})
-	print(existing_cart)
 	if not existing_cart:
 		cart = frappe.new_doc("Cart")
 		cart.date = today()
-		cart.customer = customer 
+		cart.customer = self.name
 		cart.save(ignore_permissions = True)
 		frappe.db.commit()
-		frappe.db.set_value("Customer", customer, {'cart_id': customer}) 
+		frappe.db.set_value("Customer", self.name, {'cart_id': self.name})
 		frappe.db.commit()
-		frappe.msgprint(f"Cart for customer: {customer} is created successfully.")
+		frappe.msgprint(f"Cart for customer: {self.name} is created successfully.")
 	   
 def after_insert(self , event):
 	# frappe.throw("Action work")
@@ -103,8 +101,9 @@ def create_favorite(customer) :
 		return fav 
 	
 # /home/frappe/frappe-13/apps/elaguiely/elaguiely/elaguiely/functions
-@frappe.whitelist(allow_guest=False)
+@frappe.whitelist(allow_guest=True)
 def create_sales_order(cart):
+	print('create_sales_order')
 	try:
 		if 'Elaguiely' in DOMAINS:
 			if frappe.db.exists("Cart" ,cart ):

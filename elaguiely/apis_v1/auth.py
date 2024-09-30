@@ -29,15 +29,11 @@ def login(UserName=None, Password=None, OneSignalUserID=None, deviceKey=None):
 	try:
 		# Find the user by mobile number
 		user = frappe.db.get_value('User', {'mobile_no': mobile}, 'name')
+		print('User ==> ', user)
 		if not user:
 			frappe.local.response["http_status_code"] = 400
 			frappe.local.response["message"] = _('User not found')
 			return
-
-		# Authenticate using the user's username
-		login_manager = frappe.auth.LoginManager()
-		login_manager.authenticate(user, password)
-		login_manager.post_login()
 
 	except frappe.exceptions.AuthenticationError:
 		frappe.local.response["http_status_code"] = 400
@@ -84,7 +80,7 @@ def login(UserName=None, Password=None, OneSignalUserID=None, deviceKey=None):
 				"Deleted": False,
 				"ChangeAddress": True,
 				"DeliveryValue": 0.000,
-				"Cus_class": 35,
+				"Cus_class": customer.customer_group,
 				"Token": token,
 				"deviceKey": deviceKey,
 				"imgserverpath": "http://92.205.178.113:8099/Content/img/"
@@ -101,7 +97,10 @@ def login(UserName=None, Password=None, OneSignalUserID=None, deviceKey=None):
 @frappe.whitelist(allow_guest=True)
 def register(**kwargs):
 	selling_settings = frappe.get_single("Selling Settings")
-	if frappe.db.exists("User",{"phone":kwargs.get("phone"),"email":kwargs.get("email")}):
+	mobile_no = kwargs.get('mob')
+	tel_no = kwargs.get('tel')
+	store_name = kwargs.get('store_name')
+	if frappe.db.exists("User", {"mobile_no": mobile_no}):
 		frappe.local.response['http_status_code'] = 400
 		frappe.local.response['message'] = _("Employee With Email And Phone Number Already Exist")
 		return
@@ -109,16 +108,17 @@ def register(**kwargs):
 		try:
 			customer = frappe.new_doc("Customer")
 			customer.customer_name = kwargs.get('fname')
-			customer.customer_group = selling_settings.customer_group
+			customer.customer_group = kwargs.get('cusclass')
 			customer.territory = selling_settings.territory
-			customer.enabled = 0
+			customer.disabled = 1
 			customer.customer_type = kwargs.get('customer_type') if  kwargs.get('customer_type') in ('Company','Individual') else "Individual"
 			customer.insert(ignore_permissions=True)
+			new_user = create_user_if_not_exists(customer.name, **kwargs)
 			contact = frappe.new_doc('Contact')
 			contact.first_name = customer.customer_name
 			contact.append('phone_nos',{
-				"phone": kwargs.get('tel'),
-				"is_primary_mobile_no":1
+				"phone": mobile_no,
+				"is_primary_mobile_no": 1
 			})
 			contact.append('links',{
 				"link_doctype":"Customer",
@@ -126,6 +126,18 @@ def register(**kwargs):
 				"link_type":customer.customer_name,
 			})
 			contact.insert(ignore_permissions=True)
+			if tel_no:
+				contact = frappe.new_doc('Contact')
+				contact.first_name = customer.customer_name
+				contact.append('phone_nos', {
+					"phone": tel_no,
+					"is_primary_mobile_no": 0
+				})
+				contact.append('links', {
+					"link_doctype": "Customer",
+					"link_name": customer.name,
+					"link_type": customer.customer_name,
+				})
 			address = frappe.new_doc('Address')
 			address.address_title = customer.customer_name
 			address.address_line1 = kwargs.get('address')
@@ -138,8 +150,6 @@ def register(**kwargs):
 				"link_type":customer.customer_name,
 			})
 			address.insert(ignore_permissions=True)
-			new_user = create_user_if_not_exists(customer.name,**kwargs)
-			contact_name = frappe.db.get_value('Dynamic Link',{'link_doctype':'Customer', 'link_name':customer.name}, ['parent'])
 			customer.customer_primary_contact = contact.name
 			customer.customer_primary_address = address.name
 			customer.mobile_no = contact.mobile_no
@@ -170,12 +180,12 @@ def create_user_if_not_exists(cst, **kwargs):
 		"send_welcome_email": 0,
 		"user_type": "System User",
 		"first_name": kwargs.get('fname'),
-		"email": kwargs.get('tel') + '@dynamic.com',
+		"email": kwargs.get('mob') + '@dynamic.com',
 		"enabled": 1,
 		"is_customer": 1,
 		"customer": cst,
 		"phone": kwargs.get('tel'),
-		"mobile_no": kwargs.get('tel'),
+		"mobile_no": kwargs.get('mob'),
 		"new_password": kwargs.get('password'),
 		"roles": [{"doctype": "Has Role", "role": "Customer"}],
 		# "roles": [{"role": "Customer"}, {"role": "System Manager"}],
