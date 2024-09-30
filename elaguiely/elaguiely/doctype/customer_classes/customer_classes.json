@@ -1,28 +1,32 @@
 {
  "actions": [],
  "allow_rename": 1,
- "creation": "2024-09-30 10:13:46.372009",
+ "autoname": "field:customer_class",
+ "creation": "2024-09-30 10:44:58.572773",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "category"
+  "customer_class"
  ],
  "fields": [
   {
-   "fieldname": "category",
+   "fieldname": "customer_class",
    "fieldtype": "Link",
-   "label": "Category",
-   "options": "Item Group"
+   "in_list_view": 1,
+   "label": "Customer Class",
+   "options": "Price List",
+   "reqd": 1,
+   "unique": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2024-09-30 10:15:01.214947",
+ "modified": "2024-09-30 10:46:11.549475",
  "modified_by": "Administrator",
  "module": "elaguiely",
- "name": "Brand Categories",
+ "name": "Customer Classes",
  "owner": "Administrator",
  "permissions": [],
  "sort_field": "modified",

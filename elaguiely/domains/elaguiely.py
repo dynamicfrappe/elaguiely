@@ -154,7 +154,15 @@ data = {
                "label"        : _("Arabic Name"),
                "reqd" : True
                  
-            }
+            },
+            {
+               "fieldname"    : "customer_classes",
+               "fieldtype"    : "Table",
+               "insert_after" : "column_break_5",
+               "label"        : _("Customer Classes"),
+               "options": "Customer Classes",
+                 
+            },
         ] ,
         "Stock Settings" :[
              {

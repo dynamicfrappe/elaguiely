@@ -245,8 +245,6 @@ def save_shopping_cart(**kwargs):
         customer_id = cart_data.get("CustomerID")
         customer = frappe.get_doc("Customer", customer_id)
         cart_id = customer.cart_id
-        print(customer)
-        print(cart_id)
         if cart_id:
             cart_doc = frappe.get_doc("Cart", cart_id)
             cart = frappe.db.exists("Cart", {'name': cart_id})

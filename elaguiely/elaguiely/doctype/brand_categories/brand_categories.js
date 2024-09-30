@@ -1,7 +1,7 @@
-// Copyright (c) 2023, elaguiely and contributors
+// Copyright (c) 2024, elaguiely and contributors
 // For license information, please see license.txt
 
-frappe.ui.form.on('Category', {
+frappe.ui.form.on('Brand Categories', {
 	// refresh: function(frm) {
 
 	// }

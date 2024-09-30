@@ -150,6 +150,7 @@ override_whitelisted_methods = {
 	"OrderHistory": "elaguiely.ts_api.cancel_order",
 	"ItemsSearch": "elaguiely.ts_api.get_items_serach_list",
 	"AllGov": "elaguiely.ts_api.get_all_governs",
+	"Category": "elaguiely.ts_api.get_categories",
 	# "SaveShoppingCart" : "elaguiely.ts_api.save_shopping_cart",
 
 	# Auth Routing
@@ -158,7 +159,7 @@ override_whitelisted_methods = {
 	"ItemsPrice": "elaguiely.apis_v1.item.get_items_prices",
 	"Supplier": "elaguiely.apis_v1.supplier.get_all_suppliers",
 	"CategoryBySupplier": "elaguiely.apis_v1.supplier.get_category_by_supplier",
-	"Category": "elaguiely.apis_v1.category.get_categories",
+	# "Category": "elaguiely.apis_v1.category.get_categories",
 	"SaveShoppingCart" : "elaguiely.apis_v1.cart.save_shopping_cart",
 	"Cart": "elaguiely.apis_v1.cart.cart_details",
 	"CreateOrder": "elaguiely.apis_v1.sales_order.request_sales_order",
