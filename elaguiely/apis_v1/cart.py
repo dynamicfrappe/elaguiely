@@ -1,141 +1,9 @@
-from dataclasses import fields
-
 import frappe
 import json
 from frappe import _
 
 from elaguiely.apis_v1.jwt_decorator import jwt_required
 from elaguiely.apis_v1.utils import get_item_prices
-from elaguiely.elaguiely.functions import (create_customer ,
-					   								 create_cart ,
-														 create_favorite)
-
-
-
-from elaguiely.apis.item import get_items
-
-
-# @frappe.whitelist(allow_guest=True)
-# @jwt_required
-# def cart_details(**kwargs):
-#    print('cart details')
-#    print('CustomerID', kwargs.get("CustomerID"))
-#    customer = frappe.get_doc("Customer", kwargs.get("CustomerID"))
-#    print(customer)
-#    # print('cart details ==> ', frappe.session.user.customer)
-#    # print('cart details ==> ', frappe.session.user.cart)
-#    data = frappe.get_doc("Cart" , filter = {"customer": customer.name})
-#    # data = []
-#    print('data ==> ', data)
-#    frappe.local.response["message"] = _(" Success ")
-#    frappe.local.response['http_status_code'] = 200
-#    frappe.local.response["data"] = data
-# @frappe.whitelist()
-# def add_to_cart(item, price=False, qty=False, offer=False, price_list=False, **kwargs):
-#    """
-#    Params:
-#    - item: item_code  (REQUIRED)
-#    - price: the real price after applying discount if there is one (REQUIRED)
-#    - qty: quantity to add (default is one, use -1 or 'all' to remove) (OPTIONAL)
-#    - offer: offer ID if available (OPTIONAL)
-#    - price_list: price before discount if there's an offer (REQUIRED with offer)
-#    """
-#
-#    # Default quantity
-#    if not qty:
-#       qty = 1
-#
-#    # Get current user and check for customer
-#    user = frappe.get_doc('User', frappe.session.user)
-#    customer = user.customer
-#    if not customer:
-#       frappe.local.response["message"] = _("Cannot find customer")
-#       frappe.local.response['http_status_code'] = 404
-#       frappe.local.response["data"] = {"error": _("Error request")}
-#       return
-#
-#    # Set cache key and retrieve cart from cache
-#    cart_key = f"{frappe.session.sid}_cart"
-#    cart = frappe.cache().get_value(cart_key)
-#
-#    if cart:
-#       try:
-#          cart = frappe.get_doc("Cart", cart.get("name"))
-#       except:
-#          cart = None
-#
-#    if not cart:
-#       cart = create_cart(user.customer)  # Assuming create_cart() is a valid function
-#
-#    # Validate item
-#    try:
-#       item_obj = frappe.get_doc('Item', item)
-#    except Exception as e:
-#       frappe.local.response["message"] = _("Cannot find item")
-#       frappe.local.response['http_status_code'] = 404
-#       frappe.local.response["data"] = {"error": str(e)}
-#       return
-#
-#    # Message to track what happened
-#    message = "No action"
-#    in_cart = False
-#
-#    # Check if the item is already in the cart
-#    for cart_item in cart.cart_item:
-#       if cart_item.item == item_obj.name:
-#          in_cart = True
-#          # If quantity plus input is less than or equal to 0, remove item from cart
-#          if float(cart_item.qty) + float(qty or 0) <= 0:
-#             cart.remove(cart_item)
-#             cart.save()
-#             frappe.db.commit()
-#             message = _(f"Item {item_obj.item_name} removed from cart")
-#          else:
-#             # Update quantity
-#             cart_item.qty = float(cart_item.qty) + float(qty)
-#             cart.save()
-#             frappe.db.commit()
-#             message = _(f"Item {item_obj.item_name} updated, quantity: {cart_item.qty}")
-#
-#    if not in_cart:
-#       # Get item details and append to cart if not already present
-#       item_details = get_items(filters={"item_code": item_obj.name})  # Assuming get_items() works
-#       if item_details and len(item_details) > 0:
-#          item = item_details[0]
-#          cart.append("cart_item", {
-#             "item": item_obj.name,
-#             "qty": float(qty),
-#             "offer": offer if offer else None,
-#             "rate": float(item.after_discount or 0),
-#             "discount_amount": item.item_discount
-#          })
-#          cart.save()
-#          frappe.db.commit()
-#          message = _(f"Item {item_obj.item_name} added to cart with quantity {qty}")
-#
-#    # Final response after operation
-#    frappe.local.response["message"] = message
-#    frappe.local.response['http_status_code'] = 200
-#
-#    # Fetch item data for response
-#    item_details = get_items(filters={"item_code": item_obj.name})
-#    if item_details and len(item_details) > 0:
-#       frappe.local.response["data"] = item_details[0]
-#
-#    # Map the response to the required structure
-#    mapped_response = {
-#       "Id": item_obj.name,
-#       "OrderTotal": price,  # The price after discount if available
-#       "OrderStatusId": 0,  # You can add status mapping if required
-#       "CustomerId": customer,
-#       "CustomerName": user.full_name,
-#       "OrderStatusName": "Added to cart",
-#       "CreatedOnUtc": frappe.utils.now(),
-#       "OrderStatusLst": []  # Can add more details about order status if needed
-#    }
-#
-#    # Update response
-#    frappe.local.response["data"] = mapped_response
 
 
 @frappe.whitelist(allow_guest=True)
@@ -161,12 +29,9 @@ def cart_details(**kwargs):
             return
         products = []
         for item in cart.cart_item:
-            print(item.item)
-            print(item.get('uom'))
-            print(item.rate)
             uom_prices = get_item_prices(item.item)
             product = {
-                "Id": item.get('name'),
+                "Id": item.get('item'),
                 "PreviewImage": item.get('image'),
                 "NameEng": item.get('item_name'),
                 "Name": item.get('arabic_name'),

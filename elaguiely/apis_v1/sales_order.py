@@ -161,6 +161,7 @@ def map_status_to_id(status):
     }
     return status_map.get(status, 0)
 
+
 def map_status_name(status):
     status_map = {
         "Draft": "معلق",
@@ -169,6 +170,7 @@ def map_status_name(status):
         # Add more status translations as needed
     }
     return status_map.get(status, "معلق")
+
 
 def map_status_name_eng(status):
     status_map_eng = {
@@ -179,12 +181,12 @@ def map_status_name_eng(status):
     }
     return status_map_eng.get(status, "Pending")
 
+
 def get_status_color(status):
     color_map = {
         "Draft": "InProgress",
         "Submitted": "Completed",
         "Completed": "Completed",
-        # Define color mapping based on the status
     }
     return color_map.get(status, "NotStarted")
 
@@ -264,4 +266,3 @@ def get_order_list(**kwargs):
 
     # Return the mapped response
     frappe.local.response["data"] = mapped_orders
-

@@ -49,9 +49,7 @@ def login(UserName=None, Password=None, OneSignalUserID=None, deviceKey=None):
 
 	# Fetch user details for the response
 	user_doc = frappe.get_doc("User", user)
-	print('user_doc ==> ', user_doc)
 	customer = frappe.get_doc("Customer", user_doc.customer)
-	print(customer)
 	frappe.local.response['data'] = {
 		"msg": 0,
 		"cuslist": [
@@ -116,9 +114,6 @@ def register(**kwargs):
 			customer.enabled = 0
 			customer.customer_type = kwargs.get('customer_type') if  kwargs.get('customer_type') in ('Company','Individual') else "Individual"
 			customer.insert(ignore_permissions=True)
-			print(customer.name)
-			print(customer.enabled)
-			#**create contact
 			contact = frappe.new_doc('Contact')
 			contact.first_name = customer.customer_name
 			contact.append('phone_nos',{
