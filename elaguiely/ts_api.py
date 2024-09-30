@@ -261,6 +261,7 @@ def get_best_seller_items():
 def get_categories(ParentId= None, classcode = None, **kwargs):
     try:
         response = []
+        print(555)
         if classcode:
             class_codes = frappe.get_list("Customer Classes", filters={'customer_class': classcode}, fields=['parent'])
             class_code_names = [code['parent'] for code in class_codes]
@@ -268,7 +269,7 @@ def get_categories(ParentId= None, classcode = None, **kwargs):
 
             main_groups = frappe.db.get_all("Item Group", filters={'name': ['in', class_code_names]}, fields= ["name", 'arabic_name','item_group_name', 'image'] )
             if not main_groups:
-                return {"status": "success", "data": []}
+                return []
 
             for main_group in main_groups:
                 response.append({
@@ -296,11 +297,11 @@ def get_categories(ParentId= None, classcode = None, **kwargs):
                         "SG2_Code": None,
                         "DisplayOrder": None
                     })
-
+        print(00000000000000000)
         frappe.local.response['data'] = response 
             
     except Exception as e:
-        frappe.local.response['message'] = str(e)
+        pass
 
 
 @frappe.whitelist(allow_guest = True)
