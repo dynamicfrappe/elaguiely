@@ -19,33 +19,43 @@ def generate_jwt_token(user):
 
 @frappe.whitelist(allow_guest=True)
 def login(UserName=None, Password=None, OneSignalUserID=None, deviceKey=None):
-	mobile, password = UserName, Password
 	# Check if the mobile or password is missing
-	if not mobile or not password:
+	if not UserName or not Password:
 		frappe.local.response["http_status_code"] = 400
 		frappe.local.response["message"] = _('Mobile number and password are required')
 		return
 
-	try:
-		# Find the user by mobile number
-		user = frappe.db.get_value('User', {'mobile_no': mobile}, 'name')
-		print('User ==> ', user)
-		if not user:
-			frappe.local.response["http_status_code"] = 400
-			frappe.local.response["message"] = _('User not found')
-			return
+	# Fetch the user by mobile number
+	user = frappe.db.get_value('User', {'mobile_no': UserName}, ['name', 'enabled'], as_dict=True)
 
-	except frappe.exceptions.AuthenticationError:
-		frappe.local.response["http_status_code"] = 400
-		frappe.local.response["message"] = _('Invalid mobile number or password')
+	# Check if the user exists
+	if not user:
+		frappe.local.response["http_status_code"] = 404
+		frappe.local.response["message"] = _('User not found')
+		return
+
+	# Check if the user is enabled
+	if not user.enabled:
+		frappe.local.response["http_status_code"] = 403
+		frappe.local.response["message"] = _('User account is disabled')
+		return
+
+	# Check the password using Frappe's authentication mechanism
+	try:
+		frappe.auth.check_password(user.name, Password)
+	except frappe.AuthenticationError:
+		frappe.local.response["http_status_code"] = 401
+		frappe.local.response["message"] = _('Invalid password')
 		return
 
 	# Generate JWT token for the user
-	token = generate_jwt_token(user)
+	token = generate_jwt_token(user.name)
 
-	# Fetch user details for the response
-	user_doc = frappe.get_doc("User", user)
+	# Fetch user document and related customer document
+	user_doc = frappe.get_doc("User", user.name)
 	customer = frappe.get_doc("Customer", user_doc.customer)
+
+	# Prepare the response data
 	frappe.local.response['data'] = {
 		"msg": 0,
 		"cuslist": [
@@ -54,12 +64,12 @@ def login(UserName=None, Password=None, OneSignalUserID=None, deviceKey=None):
 				"Id": customer.name,
 				"Location_lat": None,
 				"Location_long": None,
-				"CustomerName": "test3",
+				"CustomerName": customer.customer_name or "Unknown",
 				"CustomerNameEng": None,
 				"Address": None,
-				"Password": None,
+				"Password": None,  # Never return the password in the response
 				"OneSignalUserID": OneSignalUserID,
-				"Mob": mobile,
+				"Mob": user_doc.mobile_no,
 				"FullName": user_doc.full_name,
 				"BusinessName": None,
 				"Business": None,
@@ -69,7 +79,7 @@ def login(UserName=None, Password=None, OneSignalUserID=None, deviceKey=None):
 				"City": None,
 				"Country": None,
 				"State": None,
-				"Cusclass": None,
+				"Cusclass": customer.customer_group,
 				"Active": True,
 				"PolicyID": 2,
 				"StoreCode": 10,
@@ -92,6 +102,9 @@ def login(UserName=None, Password=None, OneSignalUserID=None, deviceKey=None):
 	frappe.local.response.pop('message', None)
 	frappe.local.response.pop('home_page', None)
 	frappe.local.response.pop('full_name', None)
+
+	# Commit the transaction (if necessary)
+	frappe.db.commit()
 
 
 @frappe.whitelist(allow_guest=True)

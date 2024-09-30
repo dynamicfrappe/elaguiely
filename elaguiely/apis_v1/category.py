@@ -44,6 +44,7 @@ def get_categories(ParentId=None, classcode=None, **kwargs):
                         "SG2_Code": None,
                         "DisplayOrder": None
                     })
+            print(subcategories)
         frappe.local.response['data'] = response
 
     except Exception as e:
