@@ -257,12 +257,45 @@ def get_best_seller_items():
     except Exception as e:
         return { 'status_code': 404, 'message': str(e) }
 
-
 @frappe.whitelist(allow_guest = True)
-def get_categories():
+def get_categories(ParentId= None, classcode = None, **kwargs):
     try:
         response = []
+        if classcode:
+            class_codes = frappe.get_list("Customer Classes", filters={'customer_class': classcode}, fields=['parent'])
+            class_code_names = [code['parent'] for code in class_codes]
 
+
+            main_groups = frappe.db.get_all("Item Group", filters={'name': ['in', class_code_names]}, fields= ["name", 'arabic_name','item_group_name', 'image'] )
+            if not main_groups:
+                return {"status": "success", "data": []}
+
+            for main_group in main_groups:
+                response.append({
+                    "Id": main_group.get("name"),
+                    "Name": main_group.get("arabic_name"),
+                    "NameEng": main_group.get("name"),  
+                    "Icon": main_group.get("image"),  
+                    "MG_code": None,  
+                    "SG_Code": None,
+                    "SG2_Code": None,
+                    "DisplayOrder": None
+                })
+        else:
+            subcategories = frappe.db.get_list("Brand Categories", fields=['parent'], filters=[ {'category': ParentId}])
+            for subcategory in subcategories:
+                suppliers = frappe.db.get_list("Brand", filters={'name': subcategory.get("parent")}, fields= {'name', 'arabic_name', 'image'})
+                for supplier in suppliers:
+                    response.append({
+                        "Id": supplier.get('name'),
+                        "Name": supplier.get('arabic_name'),
+                        "NameEng": supplier.get('name'),  
+                        "Icon": supplier.get('image'),  
+                        "MG_code": None,  
+                        "SG_Code": None,
+                        "SG2_Code": None,
+                        "DisplayOrder": None
+                    })
 
         frappe.local.response['data'] = response 
             
