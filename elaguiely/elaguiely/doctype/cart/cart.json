@@ -1,7 +1,7 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "format:CART-{customer}-.{##}",
+ "autoname": "field:customer",
  "creation": "2023-10-04 13:36:28.851210",
  "doctype": "DocType",
  "editable_grid": 1,
@@ -32,8 +32,11 @@
   {
    "fieldname": "customer",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Customer",
-   "options": "Customer"
+   "options": "Customer",
+   "reqd": 1,
+   "unique": 1
   },
   {
    "fieldname": "customer_name",
@@ -44,7 +47,7 @@
   {
    "fieldname": "data_4",
    "fieldtype": "Section Break",
-   "label": "Item Sectiom"
+   "label": "Item Section"
   },
   {
    "fieldname": "cart_item",
@@ -115,7 +118,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2023-10-16 23:48:09.461123",
+ "modified": "2024-09-30 12:16:41.521529",
  "modified_by": "Administrator",
  "module": "elaguiely",
  "name": "Cart",

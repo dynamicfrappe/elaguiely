@@ -1,10 +1,33 @@
 import frappe 
 from frappe import _ 
-from frappe.utils.data import  get_link_to_form 
+from frappe.utils import today
+from frappe.utils.data import  get_link_to_form
 
-DOMAINS = frappe.get_active_domains()
+
+@frappe.whitelist()
+def get_active_domains():
+	return frappe.get_active_domains()
 
 
+DOMAINS = get_active_domains()
+
+@frappe.whitelist()
+def create_cart_after_enable_customer(customer):
+	print("done")
+	existing_cart = frappe.db.exists({
+		"doctype": "Cart",
+		"name": customer 
+	})
+	print(existing_cart)
+	if not existing_cart:
+		cart = frappe.new_doc("Cart")
+		cart.date = today()
+		cart.customer = customer 
+		cart.save(ignore_permissions = True)
+		frappe.db.commit()
+		frappe.db.set_value("Customer", customer, {'cart_id': customer}) 
+		frappe.db.commit()
+		frappe.msgprint(f"Cart for customer: {customer} is created successfully.")
 	   
 def after_insert(self , event):
 	# frappe.throw("Action work")
