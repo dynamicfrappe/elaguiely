@@ -6,7 +6,7 @@ from .utils import get_item_prices
 
 
 @frappe.whitelist(allow_guest=True)
-# @jwt_required
+@jwt_required
 def get_items_prices(**kwargs):
     items_with_uom_and_prices = []
     print(kwargs)
@@ -110,4 +110,4 @@ def get_items_prices(**kwargs):
                             "ActualPrice": float(c_i.get('rate')) if c_i.get('rate') else None,
                         })
             items_with_uom_and_prices.append(item_details)
-    frappe.local.response["data"] = []
+    frappe.local.response["data"] = items_with_uom_and_prices
