@@ -167,6 +167,7 @@ override_whitelisted_methods = {
 	"DeleteShoppingCart": "elaguiely.apis_v1.cart.clear_shopping_cart",
 	"CreateOrder": "elaguiely.apis_v1.sales_order.request_sales_order",
 	"OrderHistory": "elaguiely.apis_v1.sales_order.get_order_list",
+	"EmployeeInvoice": "elaguiely.apis_v1.sales_order.get_order_details"
 }
 
 #

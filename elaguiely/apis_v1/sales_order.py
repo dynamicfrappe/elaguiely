@@ -192,3 +192,80 @@ def get_order_list(**kwargs):
 
     # Return the mapped response
     frappe.local.response["data"] = mapped_orders
+
+
+@frappe.whitelist(allow_guest=True)
+@jwt_required
+def get_order_details(**kwargs):
+    sales_order_id = kwargs.get("InvoiceID")
+    sales_order = frappe.get_doc("Sales Order", sales_order_id)
+    mapped_order = []
+    items = sales_order.items
+    for item in items:
+        i = frappe.get_doc("Item", item.item_code)
+        item_data = {
+            "PreviewImage": i.image,
+            "NameEng": i.name,
+            "Name": i.name,
+            "Unit1Name": item.get("uom"),
+            "Unit1NameEng": item.get("uom"),
+            "U_Code1": item.get("uom"),
+            "Unit1OrignalPrice": None,
+            "Unit1Price": None,
+            "Unit1Point": None,
+            "Unit1Factor": None,
+            "Unit2Name": None,
+            "Unit2NameEng": None,
+            "U_Code2": None,
+            "Unit2OrignalPrice": None,
+            "Unit2Price": None,
+            "Unit2Point": None,
+            "Unit2Factor": None,
+            "Unit3Name": None,
+            "Unit3NameEng": None,
+            "U_Code3": None,
+            "Unit3OrignalPrice": None,
+            "Unit3Price": None,
+            "Unit3Point": None,
+            "Unit3Factor": None,
+            "SummaryEng": None,
+            "DescriptionEng": None,
+            "Summary": None,
+            "Description": None,
+            "price":item.get("rate"),
+            "FromItemCard": 0,
+            "SellUnitFactor": 0.0,
+            "OrignalPrice": 0.0,
+            "SellUnitOrignalPrice": 0.0,
+            "SellUnitPoint": 0.0,
+            "ActualPrice": item.get("rate"),
+            "ItemTotalprice": item.get("amount"),
+            "SellUnit": item.get("uom"),
+            "SellUnitName": item.get("uom"),
+            "SellUnitNameEng": item.get("uom"),
+            "DiscountPrice": None,
+            "DiscountPercent": None,
+            "TotalQuantity": item.get("qty"),
+            "MG_code": None,
+            "SG_Code": None,
+            "IsFavourite": None,
+            "SellPoint": None,
+            "OrignalSellPoint": None,
+            "MinSalesOrder": None,
+            "Isbundle": None,
+            "NotChangeUnit": None
+        }
+        mapped_order.append(item_data)
+
+    # Return the mapped response
+    frappe.local.response["data"] = mapped_order
+
+
+
+
+
+
+
+
+        
+    
