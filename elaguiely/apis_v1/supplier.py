@@ -50,7 +50,7 @@ def get_category_by_supplier(supplierid, **kwargs):
         category["id"] = category.get("category")
         category["name"] = category.get("category")
         category["nameEng"] = category.get("category")
-        category["icon"] = category.get("image")
+        category["icon"] = frappe.db.get_value('Item_group', category.get('category'), "image") or ""
         category["mgCode"] = category.get("category")
         category["sgCode"] = supplierid
         category["sg2Code"] = None

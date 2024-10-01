@@ -38,7 +38,7 @@ def get_categories(ParentId=None, classcode=None, **kwargs):
                         "Id": supplier.get('name'),
                         "Name": supplier.get('arabic_name'),
                         "NameEng": supplier.get('name'),
-                        "Icon": supplier.get('image'),
+                        "Icon": frappe.db.get_value('Brand', supplier.get('name'), "image") or "",
                         "MG_code": ParentId,
                         "SG_Code": supplier.get('name'),
                         "SG2_Code": None,
