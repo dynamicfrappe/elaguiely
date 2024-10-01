@@ -34,7 +34,7 @@ def request_sales_order(**kwargs):
         # Create Sales Order
         sales_order = frappe.new_doc("Sales Order")
         sales_order.customer = customer.name
-        sales_order.transaction_date = frappe.utils.nowdate()  # You can customize this
+        sales_order.transaction_date = frappe.utils.now()  # You can customize this
 
         # Convert to datetime object
         date_object = datetime.strptime(kwargs.get("DeliveryDate"), "%Y-%m-%d")
@@ -46,7 +46,6 @@ def request_sales_order(**kwargs):
         # Add cart items to the Sales Order items table
         for cart_item in cart.get("cart_item"):  # Replace 'items' with the correct field if different
             uom_prices = get_item_prices(cart_item.item)  # Assuming you get the UOM prices this way
-            print(uom_prices)
             sales_order.append("items", {
                 "item_code": cart_item.item,  # Ensure this field matches the actual one in your Cart item table
                 "qty": cart_item.qty,
@@ -116,42 +115,68 @@ def get_status_color(status):
     }
     return color_map.get(status, "NotStarted")
 
+
 def get_status_code(status):
     status_code_map = {
-        "Draft": 10,
-        "Submitted": 20,
-        "Completed": 30,
-        # Map status to custom codes
+        "Draft": 0,
+        "On Hold": 1,
+        "To Deliver and Bill": 2,
+        "To Bill To Deliver": 3,
+        "Completed": 4,
+        "Cancelled": 5,
+        "Closed": 6,
     }
     return status_code_map.get(status, 0)
 
+
 def format_date(date):
     return date.strftime("%d-%m-%Y %I:%M %p") if date else ""
+
 
 def get_order_status_list(current_status):
     status_list = [
         {
             "ID": 1,
             "OrderStatusName": "معلق",
-            "OrderStatusNameEng": None,
+            "OrderStatusNameEng": "Pending",
             "OrderStatusCode": 0,
             "SelectedStatus": "InProgress" if current_status == "Draft" else "NotStarted"
         },
         {
             "ID": 2,
-            "OrderStatusName": "جاري المراجعه",
-            "OrderStatusNameEng": None,
+            "OrderStatusName": "تم التأكيد",
+            "OrderStatusNameEng": "Confirmed",
             "OrderStatusCode": 0,
             "SelectedStatus": "InProgress" if current_status == "Submitted" else "NotStarted"
         },
         {
             "ID": 3,
-            "OrderStatusName": "تم التأكيد",
-            "OrderStatusNameEng": None,
-            "OrderStatusCode": 0,
+            "OrderStatusName": "تم التسليم",
+            "OrderStatusNameEng": "Delivered",
+            "OrderStatusCode": 1,
             "SelectedStatus": "InProgress" if current_status == "Completed" else "NotStarted"
         },
-        # Add more statuses as per your requirement
+        {
+            "ID": 4,
+            "OrderStatusName": "جارى التحضير",
+            "OrderStatusNameEng": "In Preparation",
+            "OrderStatusCode": 0,
+            "SelectedStatus": "NotStarted"
+        },
+        {
+            "ID": 5,
+            "OrderStatusName": "في الطريق",
+            "OrderStatusNameEng": "On the Way",
+            "OrderStatusCode": 0,
+            "SelectedStatus": "NotStarted"
+        },
+        {
+            "ID": 6,
+            "OrderStatusName": "تم التسليم",
+            "OrderStatusNameEng": "Delivered",
+            "OrderStatusCode": 0,
+            "SelectedStatus": "NotStarted"
+        }
     ]
     return status_list
 
@@ -163,30 +188,31 @@ def get_order_list(**kwargs):
     orders = frappe.get_all(
         "Sales Order",
         filters={"customer": customer},
-        fields=["name", "grand_total", "status", "transaction_date"]
+        fields=["name", "grand_total", "status", "transaction_date", "docstatus"],
     )
 
     # Map the response to match your expected structure
     mapped_orders = []
     for order in orders:
+        current_status = order.get("status")  # Use 'status' for actual order status, not 'docstatus'
         order_data = {
             "Id": order.get("name"),  # Assuming the Sales Order "name" is the ID
             "OrderTotal": order.get("grand_total"),
-            "OrderStatusId": map_status_to_id(order.get("status")),  # You will define the mapping
+            "OrderStatusId": map_status_to_id(current_status),  # Map status to numeric ID
             "StoreId": 0,  # This seems to be a static value in your response
-            "CustomerId": customer,  # Directly from the input parameter
+            "CustomerId": customer,  # From the input parameter
             "CustomerName": "",  # Populate with customer name if needed
             "CustomerNameEng": "",  # Populate if needed
-            "OrderStatusName": map_status_name(order.get("status")),  # Map status to Arabic if needed
-            "OrderStatusNameEng": map_status_name_eng(order.get("status")),  # English name of status
-            "OrderStatusColor": get_status_color(order.get("status")),  # Define a function for the color
+            "OrderStatusName": map_status_name(current_status),  # Map status to Arabic
+            "OrderStatusNameEng": map_status_name_eng(current_status),  # English name of status
+            "OrderStatusColor": get_status_color(current_status),  # Define a function for the color
             "CreatedOnUtc": format_date(order.get("transaction_date")),  # Custom date formatting
-            "OrderDate": "",  # Not provided in Sales Order, you can populate if available
-            "OrderStatusCode": get_status_code(order.get("status")),  # Custom mapping for status code
+            "OrderDate": "",  # Not provided in Sales Order, populate if available
+            "OrderStatusCode": map_status_to_id(current_status),  # Custom mapping for status code
             "isvisibleSurvey": True,  # Static or dynamic value based on logic
             "surveyid": None,  # Placeholder
             "OrderFromFollow": False,  # Static or dynamic based on logic
-            "OrderStatusLst": get_order_status_list(order.get("status"))  # Dynamic list of statuses
+            "OrderStatusLst": get_order_status_list(current_status)  # Dynamic list of statuses
         }
         mapped_orders.append(order_data)
 

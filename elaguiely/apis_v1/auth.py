@@ -71,6 +71,7 @@ def login(UserName=None, Password=None, OneSignalUserID=None, deviceKey=None):
 				"Address": None,
 				"Password": None,  # Never return the password in the response
 				"OneSignalUserID": OneSignalUserID,
+				"customer_enabled": not customer.disabled,
 				"Mob": user_doc.mobile_no,
 				"FullName": user_doc.full_name,
 				"BusinessName": None,
