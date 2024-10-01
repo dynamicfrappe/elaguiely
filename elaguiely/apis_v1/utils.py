@@ -277,3 +277,32 @@ def get_item_prices(item_name):
          'factor': 1.0  # You might want to adjust this to reflect the actual factor
       }
    return uom_prices
+
+
+def get_bulk_item_prices(item_names):
+   # Fetch all prices for the given list of items in a single query
+   prices = frappe.db.get_all(
+      'Item Price',
+      fields=['item_code', 'uom', 'price_list_rate'],
+      filters={'item_code': ['in', item_names]},
+      ignore_permissions=True
+   )
+
+   # Prepare a dictionary to hold prices by item
+   item_prices = {item: [{'name': None, 'price': None, 'factor': None} for _ in range(3)] for item in item_names}
+
+   # Populate the dictionary with UOM data for up to 3 UOMs per item
+   item_uom_count = {item: 0 for item in item_names}  # Track UOM count for each item
+   for price in prices:
+      item_code = price['item_code']
+      idx = item_uom_count[item_code]
+
+      if idx < 3:  # We only store up to 3 UOMs
+         item_prices[item_code][idx] = {
+            'name': price['uom'],
+            'price': price['price_list_rate'],
+            'factor': 1.0  # Adjust this if you have actual UOM factor logic
+         }
+         item_uom_count[item_code] += 1
+
+   return item_prices
