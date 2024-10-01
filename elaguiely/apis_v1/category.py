@@ -34,17 +34,18 @@ def get_categories(ParentId=None, classcode=None, **kwargs):
                 suppliers = frappe.db.get_list("Brand", filters={'name': subcategory.get("parent")},
                                                fields={'name', 'arabic_name', 'image'})
                 for supplier in suppliers:
+                    image = frappe.db.get_value('Brand', supplier.get('name'), "image")
                     response.append({
                         "Id": supplier.get('name'),
                         "Name": supplier.get('arabic_name'),
                         "NameEng": supplier.get('name'),
-                        "Icon": frappe.db.get_value('Brand', supplier.get('name'), "image") or "",
+                        "Icon": image,
                         "MG_code": ParentId,
                         "SG_Code": supplier.get('name'),
                         "SG2_Code": None,
                         "DisplayOrder": None
                     })
-            print(subcategories)
+                    
         frappe.local.response['data'] = response
 
     except Exception as e:

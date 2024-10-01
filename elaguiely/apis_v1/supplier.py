@@ -36,6 +36,8 @@ def get_all_suppliers(**kwargs):
 @frappe.whitelist(allow_guest=True)
 @jwt_required
 def get_category_by_supplier(supplierid, **kwargs):
+    print(55555555555)
+
     supplier = frappe.get_doc("Brand", supplierid)
     if not supplier:
         return {"message": "Invalid", "data": []}
@@ -47,12 +49,15 @@ def get_category_by_supplier(supplierid, **kwargs):
     )
     responses = []
     for category in categories:
+        image = frappe.db.get_value("Item Group", category.get('category'), 'image')
         category["id"] = category.get("category")
         category["name"] = category.get("category")
         category["nameEng"] = category.get("category")
-        category["icon"] = frappe.db.get_value('Item_group', category.get('category'), "image") or ""
+        category["icon"] = image 
         category["mgCode"] = category.get("category")
         category["sgCode"] = supplierid
         category["sg2Code"] = None
         responses.append(category)
+        print(category["icon"])
+
     frappe.local.response.data = responses
