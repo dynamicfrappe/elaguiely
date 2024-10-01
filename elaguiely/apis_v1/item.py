@@ -2,22 +2,41 @@ import frappe
 from frappe import _
 
 from .jwt_decorator import jwt_required
-from .utils import get_item_prices
+from .utils import get_bulk_item_prices
 
 
 @frappe.whitelist(allow_guest=True)
 @jwt_required
 def get_items_prices(**kwargs):
     items_with_uom_and_prices = []
-    print(kwargs)
     item_group = kwargs.get('MainGroupID')
     brand = kwargs.get('SubGroup1ID')
+    customer_id = kwargs.get("CustomerID")
+
+    if not customer_id:
+        frappe.local.response["message"] = _("CustomerID is required")
+        frappe.local.response['http_status_code'] = 400
+        return
+
     filters = {}
     if item_group:
         filters['item_group'] = item_group
     if brand:
         filters['brand'] = brand
-    # Get all items
+
+    # Fetch customer and cart in one go
+    customer_name = frappe.get_value("Customer", customer_id, "name")
+
+    cart_items = frappe.get_all(
+        "Cart Item",
+        filters={'parent': frappe.get_value("Cart", {"customer": customer_name}, "name")},
+        fields=["item", "qty", "rate", "uom"]
+    ) if customer_name else []
+
+    # Convert cart items to a dictionary for quick lookup
+    cart_dict = {item['item']: item for item in cart_items}
+
+    # Fetch all items in one query
     items = frappe.get_all(
         'Item',
         fields=[
@@ -28,17 +47,18 @@ def get_items_prices(**kwargs):
         ignore_permissions=True
     )
 
+    # Fetch item prices for all items at once
+    item_names = [item['name'] for item in items]
+    item_prices = get_bulk_item_prices(item_names)  # fetch prices for all items in one query
 
     for item in items:
         # Fetch prices related to the item
-        uom_prices = get_item_prices(item['name'])
-        if any([uom_prices[0].get('name'), uom_prices[1].get('name'), uom_prices[2].get('name')]):
+        uom_prices = item_prices.get(item['name'], [])
+
+        if uom_prices:  # Ensure prices exist for the item
             # Determine which UOM matches the default UOM (stock_uom)
-            default_uom_price = None
-            for uom_price in uom_prices:
-                if uom_price['name'] == item['stock_uom']:
-                    default_uom_price = uom_price
-                    break
+            default_uom_price = next((uom for uom in uom_prices if uom['name'] == item['stock_uom']), None)
+
             # Structure the item details with multiple UOMs
             item_details = {
                 "Id": item['name'],
@@ -88,26 +108,16 @@ def get_items_prices(**kwargs):
                 "Isbundle": None,
                 "NotChangeUnit": None
             }
-            customer_id = kwargs.get("CustomerID")
-            if not customer_id:
-                frappe.local.response["message"] = _("CustomerID is required")
-                frappe.local.response['http_status_code'] = 400
-                return
 
-            # Fetch the customer document
-            customer = frappe.get_doc("Customer", customer_id)
-            cart = frappe.get_doc("Cart", {'customer': customer.name}, fields=['*'])
-            if cart:
-                for c_i in cart.cart_item:
-                    if c_i.item == item['item_code']:
-                        item_details.update({
-                            "OrignalPrice": None,
-                            "SellUnitOrignalPrice": float(c_i.get('rate')),
-                            "SellUnit": c_i.get('uom'),
-                            "SellUnitName": c_i.get('uom'),
-                            "SellUnitNameEng": c_i.get('uom'),
-                            "SellUnitPoint": c_i.get('uom'),
-                            "ActualPrice": float(c_i.get('rate')) if c_i.get('rate') else None,
-                        })
+            # Check if the item is in the cart
+            if item['item_code'] in cart_dict:
+                cart_item = cart_dict[item['item_code']]
+                item_details.update({
+                    "OrignalPrice": None,
+                    "SellUnitOrignalPrice": float(cart_item['rate']),
+                    "SellUnit": cart_item['uom'],
+                    "ActualPrice": float(cart_item['rate']),
+                })
+
             items_with_uom_and_prices.append(item_details)
     frappe.local.response["data"] = items_with_uom_and_prices
