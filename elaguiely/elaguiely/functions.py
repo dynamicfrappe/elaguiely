@@ -17,7 +17,7 @@ def create_cart_after_enable_customer(self, event):
 		"doctype": "Cart",
 		"name": self.name
 	})
-	if not existing_cart:
+	if not existing_cart and self.disabled == 0:
 		cart = frappe.new_doc("Cart")
 		cart.date = today()
 		cart.customer = self.name
@@ -26,7 +26,8 @@ def create_cart_after_enable_customer(self, event):
 		frappe.db.set_value("Customer", self.name, {'cart_id': self.name})
 		frappe.db.commit()
 		frappe.msgprint(f"Cart for customer: {self.name} is created successfully.")
-	   
+
+
 def after_insert(self , event):
 	# frappe.throw("Action work")
 	if 'Elaguiely' in DOMAINS: 

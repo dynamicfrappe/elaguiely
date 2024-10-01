@@ -99,10 +99,7 @@ doctype_js = {
 
 doc_events = {
 	"User": {
-		"validate": "elaguiely.elaguiely.functions.after_insert" ,
-		"after_insert":"elaguiely.elaguiely.functions.after_insert" ,
-		"on_trash": "elaguiely.elaguiely.functions.on_trash" 
-	
+		"on_trash": "elaguiely.elaguiely.functions.on_trash"
 	},
     "Sales Order": {
 		"validate": [

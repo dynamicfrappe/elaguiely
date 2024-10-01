@@ -1,5 +1,4 @@
 import datetime
-import json
 
 import frappe
 import jwt
@@ -43,6 +42,9 @@ def login(UserName=None, Password=None, OneSignalUserID=None, deviceKey=None):
 	# Check the password using Frappe's authentication mechanism
 	try:
 		frappe.auth.check_password(user.name, Password)
+		# Perform the actual login action
+		frappe.local.login_manager.authenticate(user.name, Password)
+		frappe.local.login_manager.post_login()
 	except frappe.AuthenticationError:
 		frappe.local.response["http_status_code"] = 401
 		frappe.local.response["message"] = _('Invalid password')
@@ -109,105 +111,157 @@ def login(UserName=None, Password=None, OneSignalUserID=None, deviceKey=None):
 
 @frappe.whitelist(allow_guest=True)
 def register(**kwargs):
+	# Fetch selling settings
 	selling_settings = frappe.get_single("Selling Settings")
-	mobile_no = kwargs.get('mob')
-	tel_no = kwargs.get('tel')
-	store_name = kwargs.get('store_name')
-	if frappe.db.exists("User", {"mobile_no": mobile_no}):
+
+	# Validate required fields (phone and email)
+	name = kwargs.get("name")
+	phone = kwargs.get("mob")
+	email = kwargs.get("email")
+	if not phone and not email:
 		frappe.local.response['http_status_code'] = 400
-		frappe.local.response['message'] = _("Employee With Email And Phone Number Already Exist")
+		frappe.local.response['message'] = _("Phone number or email are required")
 		return
-	if selling_settings.customer_group and selling_settings.territory:
-		try:
-			customer = frappe.new_doc("Customer")
-			customer.customer_name = kwargs.get('fname')
-			customer.customer_group = kwargs.get('cusclass')
-			customer.territory = selling_settings.territory
-			customer.disabled = 1
-			customer.customer_type = kwargs.get('customer_type') if  kwargs.get('customer_type') in ('Company','Individual') else "Individual"
-			customer.insert(ignore_permissions=True)
-			new_user = create_user_if_not_exists(customer.name, **kwargs)
-			contact = frappe.new_doc('Contact')
-			contact.first_name = customer.customer_name
-			contact.append('phone_nos',{
-				"phone": mobile_no,
-				"is_primary_mobile_no": 1
-			})
-			contact.append('links',{
-				"link_doctype":"Customer",
-				"link_name":customer.name,
-				"link_type":customer.customer_name,
-			})
-			contact.insert(ignore_permissions=True)
-			if tel_no:
-				contact = frappe.new_doc('Contact')
-				contact.first_name = customer.customer_name
-				contact.append('phone_nos', {
-					"phone": tel_no,
-					"is_primary_mobile_no": 0
-				})
-				contact.append('links', {
-					"link_doctype": "Customer",
-					"link_name": customer.name,
-					"link_type": customer.customer_name,
-				})
-			address = frappe.new_doc('Address')
-			address.address_title = customer.customer_name
-			address.address_line1 = kwargs.get('address')
-			address.city = kwargs.get('city')
-			address.state = kwargs.get('gov')
-			address.country = kwargs.get('country') or "Egypt"
-			address.append('links',{
-				"link_doctype":"Customer",
-				"link_name":customer.name,
-				"link_type":customer.customer_name,
-			})
-			address.insert(ignore_permissions=True)
-			customer.customer_primary_contact = contact.name
-			customer.customer_primary_address = address.name
-			customer.mobile_no = contact.mobile_no
-			customer.account_manager = new_user.name
-			customer.save(ignore_permissions=True)
-			frappe.db.commit()
-		except Exception as er:
-			frappe.local.response['http_status_code'] = 401
-			frappe.local.response['message'] =str(er)
-			frappe.local.response['data'] = {"errors" : "Not Completed Data"}
-	else :
+
+	# Check if a user with the provided phone and email already exists
+	if frappe.db.exists("User", {"username": name}):
+		frappe.local.response['http_status_code'] = 400
+		frappe.local.response['message'] = _("User with the provided store name already exists")
+		return
+	elif frappe.db.exists("User", {"email": email}):
+		frappe.local.response['http_status_code'] = 400
+		frappe.local.response['message'] = _("User with the provided email already exists")
+		return
+	elif frappe.db.exists("User", {"phone": phone}):
+		frappe.local.response['http_status_code'] = 400
+		frappe.local.response['message'] = _("User with the provided phone already exists")
+		return
+
+	# Ensure that customer group and territory are set in Selling Settings
+	if not (selling_settings.customer_group and selling_settings.territory):
 		frappe.local.response['http_status_code'] = 404
-		frappe.local.response['message']  = "Please set customer group and territory"
-		frappe.local.response['data'] = {"errors" : "Not Completed Data"}
+		frappe.local.response['message'] = _("Please set customer group and territory in Selling Settings")
+		frappe.local.response['data'] = {"errors": "Missing Selling Settings"}
+		return
+
+	try:
+		# Create a new customer document
+		customer = frappe.new_doc("Customer")
+		customer.customer_name = kwargs.get('name')
+		customer.customer_group = selling_settings.customer_group
+		customer.territory = selling_settings.territory
+		customer.disabled = 1
+		customer.customer_type = kwargs.get('customer_type') if kwargs.get('customer_type') in (
+		'Company', 'Individual') else "Individual"
+		customer.insert(ignore_permissions=True)
+
+		# Create contact document
+		contact = create_contact(kwargs, customer)
+
+		# Create address document
+		address = create_address(kwargs, customer)
+
+		# Create the user (or retrieve if it already exists)
+		new_user = create_user_if_not_exists(customer.name, **kwargs)
+
+		# Update the customer document with contact, address, and user details
+		customer.customer_primary_contact = contact.name
+		customer.customer_primary_address = address.name
+		customer.mobile_no = contact.mobile_no
+		customer.account_manager = new_user.name
+		customer.save(ignore_permissions=True)
+
+		frappe.db.commit()
+
+		# Success response
+		frappe.local.response['http_status_code'] = 200
+		frappe.local.response['message'] = _("Customer registration successful")
+		frappe.local.response['data'] = {
+			"customer_name": customer.customer_name,
+			"contact_name": contact.name,
+			"address": address.name
+		}
+	except Exception as e:
+		frappe.local.response['http_status_code'] = 500
+		frappe.local.response['message'] = _("Registration failed: {0}").format(str(e))
+		frappe.local.response['data'] = {"errors": str(e)}
+
+
+def create_contact(kwargs, customer):
+	contact = frappe.new_doc('Contact')
+	contact.first_name = customer.customer_name
+	contact.append('phone_nos', {
+		"phone": kwargs.get('mob'),
+		"is_primary_mobile_no": 1
+	})
+	contact.append('links', {
+		"link_doctype": "Customer",
+		"link_name": customer.name,
+		"link_type": customer.customer_name,
+	})
+	contact.insert(ignore_permissions=True)
+	return contact
+
+
+def create_address(kwargs, customer):
+	address = frappe.new_doc('Address')
+	address.address_title = customer.customer_name
+	address.address_line1 = kwargs.get('address')
+	address.city = kwargs.get('city')
+	address.state = kwargs.get('gov')
+	address.country = kwargs.get('country') or "Egypt"
+	address.append('links', {
+		"link_doctype": "Customer",
+		"link_name": customer.name,
+		"link_type": customer.customer_name,
+	})
+	address.insert(ignore_permissions=True)
+	return address
 
 
 @frappe.whitelist(allow_guest=True)
-def create_user_if_not_exists(cst, **kwargs):
-	"""
-	this function will create user and set  role to e-commerce
+def create_user_if_not_exists(customer_name, **kwargs):
+    """
+    Create a user if it does not exist, and assign appropriate roles.
+    """
+    phone = kwargs.get('mob')
 
-	"""
-	if frappe.db.exists("User", kwargs.get('tel')):
-		return
-	new_user = frappe.new_doc("User")
-	new_user.update({
-		"doctype": "User",
-		"send_welcome_email": 0,
-		"user_type": "System User",
-		"first_name": kwargs.get('fname'),
-		"email": kwargs.get('mob') + '@dynamic.com',
-		"enabled": 1,
-		"is_customer": 1,
-		"customer": cst,
-		"phone": kwargs.get('tel'),
-		"mobile_no": kwargs.get('mob'),
-		"new_password": kwargs.get('password'),
-		"roles": [{"doctype": "Has Role", "role": "Customer"}],
-		# "roles": [{"role": "Customer"}, {"role": "System Manager"}],
-	})
-	new_user.insert(ignore_permissions=True)
-	new_user.save(ignore_permissions=True)
-	role = frappe.get_doc("Role Profile", 'e-commerce')
-	roles = [role.role for role in role.roles]
-	new_user.add_roles(*roles)
-	new_user.save()
-	frappe.db.commit()
-	return new_user
+    # Check if a user with the given phone already exists
+    if frappe.db.exists("User", {"mobile_no": phone}):
+        return frappe.get_doc("User", {"mobile_no": phone})
+
+    # Validate required fields for user creation
+    if not kwargs.get('pass'):
+        frappe.throw(_("Password is required for new user registration"))
+
+    # Create a new user
+    new_user = frappe.new_doc("User")
+    new_user.update({
+        "doctype": "User",
+        "send_welcome_email": 0,
+        "user_type": "System User",
+        "first_name": kwargs.get('name'),
+        "email": kwargs.get('email'),  # Use a more dynamic email generator if needed
+        "enabled": 1,
+        "is_customer": 1,
+        "customer": customer_name,
+        "phone": phone,
+        "mobile_no": phone,
+        "new_password": kwargs.get('pass'),
+        "roles": [{"doctype": "Has Role", "role": "Customer"}]
+    })
+    new_user.insert(ignore_permissions=True)
+
+    # Add additional roles from the role profile
+    assign_roles(new_user, 'e-commerce')
+
+    return new_user
+
+
+def assign_roles(user, role_profile_name):
+    """
+    Assign roles to the user from a given role profile.
+    """
+    role_profile = frappe.get_doc("Role Profile", role_profile_name)
+    roles = [role.role for role in role_profile.roles]
+    user.add_roles(*roles)
