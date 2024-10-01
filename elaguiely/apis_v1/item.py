@@ -58,66 +58,66 @@ def get_items_prices(**kwargs):
         if uom_prices:  # Ensure prices exist for the item
             # Determine which UOM matches the default UOM (stock_uom)
             default_uom_price = next((uom for uom in uom_prices if uom['name'] == item['stock_uom']), None)
+            if any([uom_prices[0].get('name'), uom_prices[1].get('name'), uom_prices[2].get('name')]):
+                # Structure the item details with multiple UOMs
+                item_details = {
+                    "Id": item['name'],
+                    "PreviewImage": item.get('image', ''),
+                    "NameEng": item.get('item_name', ''),
+                    "Name": item['arabic_name'],
+                    "Unit1Name": uom_prices[0]['name'],
+                    "Unit1NameEng": uom_prices[0]['name'],
+                    "U_Code1": uom_prices[0]['name'],
+                    "Unit1OrignalPrice": uom_prices[0]['price'],
+                    "Unit1Price": uom_prices[0]['price'],
+                    "Unit1Factor": uom_prices[0]['factor'],
+                    "U_Code2": uom_prices[1]['name'],
+                    "Unit2Name": uom_prices[1]['name'],
+                    "Unit2NameEng": uom_prices[1]['name'],
+                    "Unit2OrignalPrice": uom_prices[1]['price'],
+                    "Unit2Price": uom_prices[1]['price'],
+                    "Unit2Factor": uom_prices[1]['factor'],
+                    "U_Code3": uom_prices[2]['name'],
+                    "Unit3Name": uom_prices[2]['name'],
+                    "Unit3NameEng": uom_prices[2]['name'],
+                    "Unit3OrignalPrice": uom_prices[2]['price'],
+                    "Unit3Price": uom_prices[2]['price'],
+                    "Unit3Factor": uom_prices[2]['factor'],
+                    "SummaryEng": None,
+                    "DescriptionEng": None,
+                    "Summary": None,
+                    "Description": item.get('description', ''),
+                    "price": None,
+                    "FromItemCard": None,
+                    "SellUnitFactor": None,
+                    "OrignalPrice": default_uom_price['price'] if default_uom_price else 0.00,
+                    "SellUnitOrignalPrice": default_uom_price['price'] if default_uom_price else 0.00,
+                    "SellUnit": item.get('stock_uom'),
+                    "SellUnitName": item.get('stock_uom'),
+                    "SellUnitNameEng": item.get('stock_uom'),
+                    "SellUnitPoint": item.get('stock_uom'),
+                    "ActualPrice": default_uom_price['price'] if default_uom_price else 0.00,
+                    "ItemTotalprice": None,
+                    "TotalQuantity": 1,
+                    "MG_code": item['item_group'],
+                    "SG_Code": item['brand'],
+                    "IsFavourite": None,
+                    "SellPoint": None,
+                    "OrignalSellPoint": None,
+                    "MinSalesOrder": 1,
+                    "Isbundle": None,
+                    "NotChangeUnit": None
+                }
 
-            # Structure the item details with multiple UOMs
-            item_details = {
-                "Id": item['name'],
-                "PreviewImage": item.get('image', ''),
-                "NameEng": item.get('item_name', ''),
-                "Name": item['arabic_name'],
-                "Unit1Name": uom_prices[0]['name'],
-                "Unit1NameEng": uom_prices[0]['name'],
-                "U_Code1": uom_prices[0]['name'],
-                "Unit1OrignalPrice": uom_prices[0]['price'],
-                "Unit1Price": uom_prices[0]['price'],
-                "Unit1Factor": uom_prices[0]['factor'],
-                "U_Code2": uom_prices[1]['name'],
-                "Unit2Name": uom_prices[1]['name'],
-                "Unit2NameEng": uom_prices[1]['name'],
-                "Unit2OrignalPrice": uom_prices[1]['price'],
-                "Unit2Price": uom_prices[1]['price'],
-                "Unit2Factor": uom_prices[1]['factor'],
-                "U_Code3": uom_prices[2]['name'],
-                "Unit3Name": uom_prices[2]['name'],
-                "Unit3NameEng": uom_prices[2]['name'],
-                "Unit3OrignalPrice": uom_prices[2]['price'],
-                "Unit3Price": uom_prices[2]['price'],
-                "Unit3Factor": uom_prices[2]['factor'],
-                "SummaryEng": None,
-                "DescriptionEng": None,
-                "Summary": None,
-                "Description": item.get('description', ''),
-                "price": None,
-                "FromItemCard": None,
-                "SellUnitFactor": None,
-                "OrignalPrice": default_uom_price['price'] if default_uom_price else 0.00,
-                "SellUnitOrignalPrice": default_uom_price['price'] if default_uom_price else 0.00,
-                "SellUnit": item.get('stock_uom'),
-                "SellUnitName": item.get('stock_uom'),
-                "SellUnitNameEng": item.get('stock_uom'),
-                "SellUnitPoint": item.get('stock_uom'),
-                "ActualPrice": default_uom_price['price'] if default_uom_price else 0.00,
-                "ItemTotalprice": None,
-                "TotalQuantity": 1,
-                "MG_code": item['item_group'],
-                "SG_Code": item['brand'],
-                "IsFavourite": None,
-                "SellPoint": None,
-                "OrignalSellPoint": None,
-                "MinSalesOrder": 1,
-                "Isbundle": None,
-                "NotChangeUnit": None
-            }
+                # Check if the item is in the cart
+                if item['item_code'] in cart_dict:
+                    cart_item = cart_dict[item['item_code']]
+                    item_details.update({
+                        "OrignalPrice": None,
+                        "SellUnitOrignalPrice": float(cart_item['rate']),
+                        "SellUnit": cart_item['uom'],
+                        "ActualPrice": float(cart_item['rate']),
+                    })
 
-            # Check if the item is in the cart
-            if item['item_code'] in cart_dict:
-                cart_item = cart_dict[item['item_code']]
-                item_details.update({
-                    "OrignalPrice": None,
-                    "SellUnitOrignalPrice": float(cart_item['rate']),
-                    "SellUnit": cart_item['uom'],
-                    "ActualPrice": float(cart_item['rate']),
-                })
-
-            items_with_uom_and_prices.append(item_details)
+                items_with_uom_and_prices.append(item_details)
     frappe.local.response["data"] = items_with_uom_and_prices
