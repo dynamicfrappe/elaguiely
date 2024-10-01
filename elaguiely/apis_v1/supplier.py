@@ -41,17 +41,17 @@ def get_category_by_supplier(supplierid, **kwargs):
         return {"message": "Invalid", "data": []}
     categories = frappe.get_list(
         "Brand Categories",
-        fields=['name'],
+        fields=['category'],
         filters=[{'parent': supplier.name}],
         ignore_permissions=True
     )
     responses = []
     for category in categories:
-        category["id"] = category.get("name")
-        category["name"] = category.get("name")
-        category["nameEng"] = category.get("name_eng")
+        category["id"] = category.get("category")
+        category["name"] = category.get("category")
+        category["nameEng"] = category.get("category")
         category["icon"] = category.get("image")
-        category["mgCode"] = category.get("name")
+        category["mgCode"] = category.get("category")
         category["sgCode"] = supplierid
         category["sg2Code"] = None
         responses.append(category)
