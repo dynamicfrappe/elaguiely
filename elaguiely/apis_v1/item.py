@@ -9,15 +9,27 @@ from .utils import get_bulk_item_prices , stock_qty
 def get_items_prices(**kwargs):
     items_with_uom_and_prices = []
     item_group = kwargs.get('MainGroupID')
-    brand = kwargs.get('SubGroup1ID')
+    brand = kwargs.get('SubGroup1ID') or kwargs.get("SupplierID")
     customer_id = kwargs.get("CustomerID")
     item_name = kwargs.get("ItemName")
+    is_fav = kwargs.get("fav")
 
     if not customer_id:
         frappe.local.response["message"] = _("CustomerID is required")
         frappe.local.response['http_status_code'] = 400
         return
 
+    default_fav = False
+    favorite_doc = frappe.get_value("Favorite", {'customer': customer_id}, 'name')
+    fav_items_dict = {}
+    if favorite_doc:
+        fav_items_dict = frappe.db.get_list("Favorite Item", filters={'parent': favorite_doc}, fields=['item'])
+    print(fav_items_dict)
+
+    fav_items = []
+    for i in fav_items_dict:
+        fav_items.append( i.get("item") )
+    print(fav_items)
     filters = {}
     if item_group:
         filters['item_group'] = item_group
@@ -25,10 +37,17 @@ def get_items_prices(**kwargs):
         filters['brand'] = brand
     if item_name:
         filters['item_name'] = item_name
+    if is_fav is not None:
+        if is_fav:
+            filters['name'] = ['in', fav_items]
+            default_fav = True
+        else:
+            filters['name'] = ['not in', fav_items]
+
 
     # Fetch customer and cart in one go
     customer_name = frappe.get_value("Customer", customer_id, "name")
-
+    price_list_name = frappe.get_value("Customer", customer_id, "default_price_list")
     cart_items = frappe.get_all(
         "Cart Item",
         filters={'parent': frappe.get_value("Cart", {"customer": customer_name}, "name")},
@@ -51,9 +70,26 @@ def get_items_prices(**kwargs):
 
     # Fetch item prices for all items at once
     item_names = [item['name'] for item in items]
+
+    # item_prices = frappe.db.sql("""
+    #     SELECT ip.item_code, ip.uom AS name, ip.price_list_rate , '1' as factor, ip.price_list
+    #     FROM `tabItem Price` ip
+    #     WHERE ip.item_code IN %s
+    # """, (tuple(item_names),), as_dict=True)
+    
+    # prices_dict = {}
+    # for price in item_prices:
+    #     if price['item_code'] not in prices_dict:
+    #         prices_dict[price['item_code']] = []
+    #     prices_dict[price['item_code']].append(price)
+
     item_prices = get_bulk_item_prices(item_names)  # fetch prices for all items in one query
 
     for item in items:
+        # Fetch favourite field
+        if item['name'] in fav_items:
+            default_fav = True
+            
         # Fetch prices related to the item
         uom_prices = item_prices.get(item['name'], [])
 
@@ -108,7 +144,7 @@ def get_items_prices(**kwargs):
                     "TotalQuantity": 1,
                     "MG_code": item['item_group'],
                     "SG_Code": item['brand'],
-                    "IsFavourite": None,
+                    "IsFavourite": default_fav,
                     "SellPoint": None,
                     "OrignalSellPoint": None,
                     "MinSalesOrder": 1,
@@ -143,3 +179,31 @@ def get_items_search(**kwargs):
     item_names = [item['item_name'] for item in items]
     # Return the list of item names
     frappe.local.response["data"] = item_names
+
+
+@frappe.whitelist(allow_guest=True)
+@jwt_required
+def save_favourite_item(**kwargs):
+    print(11111111111)
+    customer_id = kwargs.get("Cus_Id")
+    item_code = kwargs.get("itemcode")
+    favorite_doc = frappe.get_value("Favorite", {'customer': customer_id}, 'name')
+    fav_items_dict = frappe.db.get_list("Favorite Item", filters={'parent': favorite_doc}, fields=['item', 'name'])
+    for i in fav_items_dict:
+        if item_code == i.get("item"):
+            frappe.db.delete("Favorite Item", i.get("name"))
+            frappe.db.commit()
+            return "Marked as unFavourite!"
+    print(8888888888888888)
+    new_fav_item = frappe.get_doc({
+        'doctype': 'Favorite Item',
+        'parent': favorite_doc,
+        'parenttype': 'Favorite',
+        'parentfield': 'items',
+        'item': item_code
+    })
+    new_fav_item.insert()
+    frappe.db.commit()
+    return "Marked as Favourite!"
+
+

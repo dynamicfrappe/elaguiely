@@ -28,6 +28,18 @@ def create_cart_after_enable_customer(self, event):
 		frappe.msgprint(f"Cart for customer: {self.name} is created successfully.")
 
 
+@frappe.whitelist(allow_guest=True)
+def create_favourite_after_enable_customer(self, event):
+	existing_fav = frappe.db.exists({
+		"doctype": "Favorite",
+		"customer": self.name
+	})
+	if not existing_fav and self.disabled == 0:
+		fav = frappe.new_doc("Favorite")
+		fav.customer = self.name
+		fav.save(ignore_permissions = True)
+		frappe.db.commit()
+
 def after_insert(self , event):
 	# frappe.throw("Action work")
 	if 'Elaguiely' in DOMAINS: 
