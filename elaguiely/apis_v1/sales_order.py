@@ -289,16 +289,21 @@ def cancel_order(order):
     if frappe.db.exists("Sales Order" , order):
         doc = frappe.get_doc("Sales Order" , order)
         if doc.customer == frappe.local.user.get("customer"):
-            if doc.docstatus != 1:
-                doc.docstatus = 1
+            try:
+                if doc.docstatus != 1:
+                    doc.docstatus = 1
+                    doc.save(ignore_permissions=True)
+                    frappe.db.commit()
+                doc.docstatus = 2
                 doc.save(ignore_permissions=True)
                 frappe.db.commit()
-            doc.docstatus = 2
-            doc.save(ignore_permissions=True)
-            frappe.db.commit()
-            frappe.local.response['http_status_code'] = 200
-            frappe.local.response['message'] = _("The Order Canceled")
-            return "The Order Canceled."
+                frappe.local.response['http_status_code'] = 200
+                frappe.local.response['message'] = _("The Order Canceled")
+                return "The Order Canceled."
+            except Exception as e:
+                frappe.local.response['http_status_code'] = 400
+                frappe.local.response['message'] = _(e)
+
 
         else:
             frappe.local.response['http_status_code'] = 400
