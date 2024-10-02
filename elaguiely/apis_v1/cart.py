@@ -115,6 +115,10 @@ def save_shopping_cart(**kwargs):
 			cart = frappe.db.exists("Cart", {'name': cart_id})
 			product_data = cart_data.get("Product")
 			print(product_data)
+			if product_data.get("totalquantity", 0) > actual_qty :
+					frappe.local.response['http_status_code'] = 400
+					frappe.local.response['message'] = _("No quantity avaliable for this item.")
+					return "No quantity avaliable for this item."
 			existing_product = frappe.db.exists("Cart Item", {
 				"item": product_data.get("id"),
 				"parent": cart_doc.name
@@ -127,10 +131,7 @@ def save_shopping_cart(**kwargs):
 				default_warehouse = frappe.db.get_single_value('Stock Settings', 'default_warehouse')
 				actual_qty = frappe.get_value("Bin" , {"item_code":product_data.get("id") , "warehouse":default_warehouse} , 'actual_qty')
 
-				if product_data.get("totalquantity", 0) > actual_qty :
-					frappe.local.response['http_status_code'] = 400
-					frappe.local.response['message'] = _("No quantity avaliable for this item.")
-					return "No quantity avaliable for this item."
+				
 
 				cart_item.qty = product_data.get("totalquantity", 0)
 
