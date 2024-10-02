@@ -299,6 +299,7 @@ def cancel_order(**kwargs):
 	order = kwargs.get("orderid")
 	return order
 
+
 	if frappe.db.exists("Sales Order" , order):
 		doc = frappe.get_doc("Sales Order" , order)
 		if doc.customer == frappe.local.user.get("customer"):
