@@ -57,6 +57,8 @@ def get_items_prices(**kwargs):
         # Fetch prices related to the item
         uom_prices = item_prices.get(item['name'], [])
 
+        print(uom_prices)
+
         if uom_prices:  # Ensure prices exist for the item
             # Determine which UOM matches the default UOM (stock_uom)
             default_uom_price = next((uom for uom in uom_prices if uom['name'] == item['stock_uom']), None)
@@ -73,19 +75,21 @@ def get_items_prices(**kwargs):
                     "Unit1OrignalPrice": uom_prices[0]['price'],
                     "Unit1Price": uom_prices[0]['price'],
                     "Unit1Factor": uom_prices[0]['factor'],
+                    "actual_qty1":int(stock_qty(item['name'] , uom_prices[0]['name'] ) or 0),
                     "U_Code2": uom_prices[1]['name'],
                     "Unit2Name": uom_prices[1]['name'],
                     "Unit2NameEng": uom_prices[1]['name'],
                     "Unit2OrignalPrice": uom_prices[1]['price'],
                     "Unit2Price": uom_prices[1]['price'],
                     "Unit2Factor": uom_prices[1]['factor'],
+                    "actual_qty2":int(stock_qty(item['name'] , uom_prices[1]['name'] ) or 0),
                     "U_Code3": uom_prices[2]['name'],
                     "Unit3Name": uom_prices[2]['name'],
                     "Unit3NameEng": uom_prices[2]['name'],
                     "Unit3OrignalPrice": uom_prices[2]['price'],
                     "Unit3Price": uom_prices[2]['price'],
                     "Unit3Factor": uom_prices[2]['factor'],
-                    "actual_qty":int(stock_qty(item['name']) or 0),
+                    "actual_qty3":int(stock_qty(item['name'] , uom_prices[2]['name'] ) or 0),
                     "SummaryEng": None,
                     "DescriptionEng": None,
                     "Summary": None,

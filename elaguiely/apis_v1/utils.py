@@ -309,8 +309,8 @@ def get_bulk_item_prices(item_names):
 
 
 
-def stock_qty (item_code):
+def stock_qty (item_code , uom):
 	default_warehouse = frappe.db.get_single_value('Stock Settings', 'default_warehouse')
-	actual_qty = frappe.get_value("Bin" , {"item_code":item_code , "warehouse":default_warehouse} , 'actual_qty')
+	actual_qty = frappe.get_value("Bin" , {"item_code":item_code , "warehouse":default_warehouse , "stock_uom" :uom} , 'actual_qty')
 
 	return actual_qty
