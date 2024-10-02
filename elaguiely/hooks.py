@@ -159,6 +159,7 @@ override_whitelisted_methods = {
 	"login_user": "elaguiely.apis_v1.auth.login",
 	"CustomerReg": "elaguiely.apis_v1.auth.register",
 	"ItemsPrice": "elaguiely.apis_v1.item.get_items_prices",
+	"ItemsSearch": "elaguiely.apis_v1.item.get_items_search",
 	"Supplier": "elaguiely.apis_v1.supplier.get_all_suppliers",
 	"CategoryBySupplier": "elaguiely.apis_v1.supplier.get_category_by_supplier",
 	"Category": "elaguiely.apis_v1.category.get_categories",
@@ -167,7 +168,7 @@ override_whitelisted_methods = {
 	"DeleteShoppingCart": "elaguiely.apis_v1.cart.clear_shopping_cart",
 	"CreateOrder": "elaguiely.apis_v1.sales_order.request_sales_order",
 	"OrderHistory": "elaguiely.apis_v1.sales_order.get_order_list",
-	"EmployeeInvoice": "elaguiely.apis_v1.sales_order.get_order_details"
+	"EmployeeInvoice": "elaguiely.apis_v1.sales_order.get_order_details",
 }
 
 #
