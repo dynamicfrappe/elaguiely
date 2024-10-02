@@ -289,6 +289,10 @@ def cancel_order(order):
     if frappe.db.exists("Sales Order" , order):
         doc = frappe.get_doc("Sales Order" , order)
         if doc.customer == frappe.local.user.get("customer"):
+            if doc.docstatus == 2 :
+                frappe.local.response['http_status_code'] = 400
+                frappe.local.response['message'] = "Order already canceled"
+                return "Order already canceled"
             try:
                 if doc.docstatus != 1:
                     doc.docstatus = 1
