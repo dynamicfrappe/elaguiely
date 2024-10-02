@@ -12,6 +12,7 @@ def get_items_prices(**kwargs):
     item_group = kwargs.get('MainGroupID')
     brand = kwargs.get('SubGroup1ID')
     customer_id = kwargs.get("CustomerID")
+    item_name = kwargs.get("ItemName")
 
     if not customer_id:
         frappe.local.response["message"] = _("CustomerID is required")
@@ -23,6 +24,8 @@ def get_items_prices(**kwargs):
         filters['item_group'] = item_group
     if brand:
         filters['brand'] = brand
+    if item_name:
+        filters['item_name'] = item_name
 
     # Fetch customer and cart in one go
     customer_name = frappe.get_value("Customer", customer_id, "name")
