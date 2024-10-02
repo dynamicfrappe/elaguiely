@@ -77,22 +77,11 @@ def request_sales_order(**kwargs):
         frappe.local.response["error"] = str(e)
 
 
-def map_status_to_id(status):
-    status_map = {
-        "Draft": 1,
-        "Submitted": 2,
-        "Completed": 3,
-        # Add more status mappings as needed
-    }
-    return status_map.get(status, 0)
-
-
 def map_status_name(status):
     status_map = {
         "Draft": "معلق",
         "Submitted": "تم التأكيد",
         "Completed": "تم التسليم",
-        # Add more status translations as needed
     }
     return status_map.get(status, "معلق")
 
@@ -118,7 +107,7 @@ def get_status_color(status):
 
 def get_status_code(status):
     status_code_map = {
-        "Draft": 0,
+        "Draft": 1,
         "On Hold": 1,
         "To Deliver and Bill": 2,
         "To Bill To Deliver": 3,
@@ -126,7 +115,7 @@ def get_status_code(status):
         "Cancelled": 5,
         "Closed": 6,
     }
-    return status_code_map.get(status, 0)
+    return status_code_map.get(status, 1)
 
 
 def format_date(date):
@@ -198,17 +187,17 @@ def get_order_list(**kwargs):
         order_data = {
             "Id": order.get("name"),  # Assuming the Sales Order "name" is the ID
             "OrderTotal": order.get("grand_total"),
-            "OrderStatusId": map_status_to_id(current_status),  # Map status to numeric ID
-            "StoreId": 0,  # This seems to be a static value in your response
-            "CustomerId": customer,  # From the input parameter
-            "CustomerName": "",  # Populate with customer name if needed
-            "CustomerNameEng": "",  # Populate if needed
-            "OrderStatusName": map_status_name(current_status),  # Map status to Arabic
-            "OrderStatusNameEng": map_status_name_eng(current_status),  # English name of status
-            "OrderStatusColor": get_status_color(current_status),  # Define a function for the color
-            "CreatedOnUtc": format_date(order.get("transaction_date")),  # Custom date formatting
-            "OrderDate": "",  # Not provided in Sales Order, populate if available
-            "OrderStatusCode": map_status_to_id(current_status),  # Custom mapping for status code
+            "OrderStatusId": get_status_code(current_status),  # Map status to numeric ID
+            "StoreId": 0,
+            "CustomerId": customer,
+            "CustomerName": customer,
+            "CustomerNameEng": customer,
+            "OrderStatusName": map_status_name(current_status),
+            "OrderStatusNameEng": map_status_name_eng(current_status),
+            "OrderStatusColor": get_status_color(current_status),
+            "CreatedOnUtc": format_date(order.get("transaction_date")),
+            "OrderDate": format_date(order.get("transaction_date")),
+            "OrderStatusCode": get_status_code(current_status),  # Custom mapping for status code
             "isvisibleSurvey": True,  # Static or dynamic value based on logic
             "surveyid": None,  # Placeholder
             "OrderFromFollow": False,  # Static or dynamic based on logic
@@ -285,13 +274,3 @@ def get_order_details(**kwargs):
 
     # Return the mapped response
     frappe.local.response["data"] = mapped_order
-
-
-
-
-
-
-
-
-        
-    
