@@ -1,3 +1,4 @@
+from crypt import methods
 from datetime import datetime
 
 import frappe
@@ -170,44 +171,50 @@ def get_order_status_list(current_status):
     return status_list
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist(allow_guest=True, methods=["GET", "POST"])
 @jwt_required
 def get_order_list(**kwargs):
-    customer = kwargs.get("cid")
-    orders = frappe.get_all(
-        "Sales Order",
-        filters={"customer": customer},
-        fields=["name", "grand_total", "status", "transaction_date", "docstatus"],
-        order_by='-modified'
-    )
 
-    # Map the response to match your expected structure
-    mapped_orders = []
-    for order in orders:
-        current_status = order.get("status")  # Use 'status' for actual order status, not 'docstatus'
-        order_data = {
-            "Id": order.get("name"),  # Assuming the Sales Order "name" is the ID
-            "OrderTotal": order.get("grand_total"),
-            "OrderStatusId": get_status_code(current_status),  # Map status to numeric ID
-            "StoreId": 0,
-            "CustomerId": customer,
-            "CustomerName": customer,
-            "CustomerNameEng": customer,
-            "OrderStatusName": map_status_name(current_status),
-            "OrderStatusNameEng": map_status_name_eng(current_status),
-            "OrderStatusColor": get_status_color(current_status),
-            "CreatedOnUtc": format_date(order.get("transaction_date")),
-            "OrderDate": format_date(order.get("transaction_date")),
-            "OrderStatusCode": get_status_code(current_status),  # Custom mapping for status code
-            "isvisibleSurvey": True,  # Static or dynamic value based on logic
-            "surveyid": None,  # Placeholder
-            "OrderFromFollow": False,  # Static or dynamic based on logic
-            "OrderStatusLst": get_order_status_list(current_status)  # Dynamic list of statuses
-        }
-        mapped_orders.append(order_data)
+    if frappe.request.method == 'GET':
+        customer = kwargs.get("cid")
+        orders = frappe.get_all(
+            "Sales Order",
+            filters={"customer": customer},
+            fields=["name", "grand_total", "status", "transaction_date", "docstatus"],
+            order_by='-modified'
+        )
 
-    # Return the mapped response
-    frappe.local.response["data"] = mapped_orders
+        # Map the response to match your expected structure
+        mapped_orders = []
+        for order in orders:
+            current_status = order.get("status")  # Use 'status' for actual order status, not 'docstatus'
+            order_data = {
+                "Id": order.get("name"),  # Assuming the Sales Order "name" is the ID
+                "OrderTotal": order.get("grand_total"),
+                "OrderStatusId": get_status_code(current_status),  # Map status to numeric ID
+                "StoreId": 0,
+                "CustomerId": customer,
+                "CustomerName": customer,
+                "CustomerNameEng": customer,
+                "OrderStatusName": map_status_name(current_status),
+                "OrderStatusNameEng": map_status_name_eng(current_status),
+                "OrderStatusColor": get_status_color(current_status),
+                "CreatedOnUtc": format_date(order.get("transaction_date")),
+                "OrderDate": format_date(order.get("transaction_date")),
+                "OrderStatusCode": get_status_code(current_status),  # Custom mapping for status code
+                "isvisibleSurvey": True,  # Static or dynamic value based on logic
+                "surveyid": None,  # Placeholder
+                "OrderFromFollow": False,  # Static or dynamic based on logic
+                "OrderStatusLst": get_order_status_list(current_status)  # Dynamic list of statuses
+            }
+            mapped_orders.append(order_data)
+
+        # Return the mapped response
+        frappe.local.response["data"] = mapped_orders
+    elif frappe.request.method == 'POST':
+        print(kwargs)
+        order_id = kwargs.get("orderid")
+        cancel_order(order_id)
 
 
 @frappe.whitelist(allow_guest=True)
@@ -277,71 +284,62 @@ def get_order_details(**kwargs):
     frappe.local.response["data"] = mapped_order
 
 
+def cancel_order(order):
+    if frappe.db.exists("Sales Order" , order):
+        doc = frappe.get_doc("Sales Order" , order)
+        if doc.customer == frappe.local.user.get("customer"):
+            if doc.docstatus != 1:
+                doc.docstatus = 1
+                doc.save(ignore_permissions=True)
+                frappe.db.commit()
+            doc.docstatus = 2
+            doc.save(ignore_permissions=True)
+            frappe.db.commit()
+            frappe.local.response['http_status_code'] = 200
+            frappe.local.response['message'] = _("The Order Canceled")
+            return "The Order Canceled."
 
-
-@frappe.whitelist(allow_guest=True)
-@jwt_required
-def cancel_order(**kwargs):
-	order = kwargs.get("orderid")
-	# return order
-
-
-	if frappe.db.exists("Sales Order" , order):
-		doc = frappe.get_doc("Sales Order" , order)
-		if doc.customer == frappe.local.user.get("customer"):
-			doc.docstatus = 1
-			doc.save(ignore_permissions=True)
-			frappe.db.commit()
-			return "order submmited"
-			doc.cancel()
-			frappe.db.commit()
-			frappe.local.response['http_status_code'] = 200
-			frappe.local.response['message'] = _("The Order Canceled")
-			return "The Order Canceled." 
-
-		else:
-			frappe.local.response['http_status_code'] = 400
-			frappe.local.response['message'] = _("This Customer not owner for this order")
-			return "No order found like this." 
-	else:
-		frappe.local.response['http_status_code'] = 400
-		frappe.local.response['message'] = _("No order found like this.")
-		return "No order found like this."
+        else:
+            frappe.local.response['http_status_code'] = 400
+            frappe.local.response['message'] = _("This Customer not owner for this order")
+            return "No order found like this."
+    else:
+        frappe.local.response['http_status_code'] = 400
+        frappe.local.response['message'] = _("No order found like this.")
+    return "No order found like this."
 	
 
 
 @frappe.whitelist(allow_guest=True)
 @jwt_required
 def reorder(**kwargs):
-	order = kwargs.get("orderid")
+    order = kwargs.get("OrderID")
+    print('order ==> ', order)
+    if frappe.db.exists("Sales Order" , order):
+        doc = frappe.get_doc("Sales Order" , order)
+        if doc.customer == frappe.local.user.get("customer"):
+            cart = frappe.get_doc("Cart" , frappe.get_value("Customer" , frappe.local.user.get("customer") , 'cart_id' ))
+            cart.set("cart_item", [])  # Clear the items list
+            cart.save()  # Save the changes to the cart
+            frappe.db.commit()
+            # cart.append("cart_item", [])
+            for i in doc.get("items"):
+                cart.append("cart_item",{
+                    "item": i.item_code,
+                    "item_group": i.item_group,
+                    "rate": i.rate,
+                    "qty":i.qty
+                })
+            cart.save()
+            frappe.db.commit()
+            frappe.local.response['http_status_code'] = 200
+            frappe.local.response['message'] = _("The order items set in cart")
 
-	if frappe.db.exists("Sales Order" , order):
-		doc = frappe.get_doc("Sales Order" , order)
-		if doc.customer == frappe.local.user.get("customer"):
-			cart = frappe.get_doc("Cart" , frappe.get_value("Customer" , frappe.local.user.get("customer") , 'cart_id' ))
-
-			cart.append("cart_item", [])
-
-			for i in doc.get("items"):
-				cart.append("cart_item",{
-					"item" : i.item_code,
-					"item_group" : i.item_group,
-					"rate" : i.rate,
-					"qty":i.qty  
-				})
-			
-			cart.save(ignore_permission=True)
-			frappe.db.commit()
-			
-			
-			frappe.local.response['http_status_code'] = 200
-			frappe.local.response['message'] = _("The Order Canceled")
-
-		else:
-			frappe.local.response['http_status_code'] = 400
-			frappe.local.response['message'] = _("This Customer not owner for this order")
-			return "No order found like this." 
-	else:
-		frappe.local.response['http_status_code'] = 400
-		frappe.local.response['message'] = _("No order found like this.")
-		return "No order found like this."
+        else:
+            frappe.local.response['http_status_code'] = 400
+            frappe.local.response['message'] = _("This Customer not owner for this order")
+            return "No order found like this."
+    else:
+        frappe.local.response['http_status_code'] = 400
+        frappe.local.response['message'] = _("No order found like this.")
+        return "No order found like this."

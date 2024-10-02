@@ -171,7 +171,7 @@ override_whitelisted_methods = {
 	"OrderHistory": "elaguiely.apis_v1.sales_order.get_order_list",
 	"EmployeeInvoice": "elaguiely.apis_v1.sales_order.get_order_details",
 	"SaveFavoriteItem" : "elaguiely.apis_v1.item.save_favourite_item",
-
+	"ReOrder": "elaguiely.apis_v1.sales_order.reorder",
 }
 
 #

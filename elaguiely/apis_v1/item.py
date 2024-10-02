@@ -207,3 +207,15 @@ def save_favourite_item(**kwargs):
     return "Marked as Favourite!"
 
 
+def get_best_selling_items(**kwargs):
+    customer = kwargs.get('CustomerID')
+    # Fetch all items with 'item_name' field
+    items = frappe.get_all(
+        'Item',
+        fields=['item_name'],
+        ignore_permissions=True
+    )
+    # Extract only the item_name values
+    item_names = [item['item_name'] for item in items]
+    # Return the list of item names
+    frappe.local.response["data"] = item_names
