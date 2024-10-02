@@ -221,8 +221,8 @@ def get_order_details(**kwargs):
         i = frappe.get_doc("Item", item.item_code)
         item_data = {
             "PreviewImage": i.image,
-            "NameEng": i.name,
-            "Name": i.name,
+            "NameEng": i.item_name,
+            "Name": i.item_name,
             "Unit1Name": item.get("uom"),
             "Unit1NameEng": item.get("uom"),
             "U_Code1": item.get("uom"),
