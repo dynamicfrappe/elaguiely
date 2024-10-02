@@ -262,19 +262,20 @@ def update_items(fn,*args,**kwargs) :
 def get_item_prices(item_name):
    prices = frappe.db.get_list(
       'Item Price',
-      fields=['uom', 'price_list_rate'],
+      fields=['uom', 'price_list_rate', 'price_list'],
       filters={'item_code': item_name}, ignore_permissions=True
    )
 
    # Prepare a placeholder for up to 3 UOMs
-   uom_prices = [{'name': None, 'price': None, 'factor': None} for _ in range(3)]
+   uom_prices = [{'name': None, 'price': None, 'factor': None, 'price_list': None} for _ in range(3)]
 
    # Populate UOM data into respective slots (up to 3 UOMs)
    for idx, price in enumerate(prices[:3]):
       uom_prices[idx] = {
          'name': price['uom'],
          'price': price['price_list_rate'],
-         'factor': 1.0  # You might want to adjust this to reflect the actual factor
+         'factor': 1.0,  # You might want to adjust this to reflect the actual factor
+         'price_list': price['price_list']
       }
    return uom_prices
 
@@ -283,13 +284,13 @@ def get_bulk_item_prices(item_names):
    # Fetch all prices for the given list of items in a single query
    prices = frappe.db.get_all(
       'Item Price',
-      fields=['item_code', 'uom', 'price_list_rate'],
+      fields=['item_code', 'uom', 'price_list_rate', 'price_list'],
       filters={'item_code': ['in', item_names]},
       ignore_permissions=True
    )
 
    # Prepare a dictionary to hold prices by item
-   item_prices = {item: [{'name': None, 'price': None, 'factor': None} for _ in range(3)] for item in item_names}
+   item_prices = {item: [{'name': None, 'price': None, 'factor': None, 'price_list': None} for _ in range(3)] for item in item_names}
 
    # Populate the dictionary with UOM data for up to 3 UOMs per item
    item_uom_count = {item: 0 for item in item_names}  # Track UOM count for each item
@@ -301,7 +302,8 @@ def get_bulk_item_prices(item_names):
          item_prices[item_code][idx] = {
             'name': price['uom'],
             'price': price['price_list_rate'],
-            'factor': 1.0  # Adjust this if you have actual UOM factor logic
+            'factor': 1.0,  # Adjust this if you have actual UOM factor logic
+            'price_list': price['price_list']
          }
          item_uom_count[item_code] += 1
 
