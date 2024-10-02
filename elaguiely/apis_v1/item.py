@@ -48,6 +48,7 @@ def get_items_prices(**kwargs):
     # Fetch customer and cart in one go
     customer_name = frappe.get_value("Customer", customer_id, "name")
     price_list_name = frappe.get_value("Customer", customer_id, "default_price_list")
+    print(price_list_name)
     cart_items = frappe.get_all(
         "Cart Item",
         filters={'parent': frappe.get_value("Cart", {"customer": customer_name}, "name")},
@@ -71,18 +72,6 @@ def get_items_prices(**kwargs):
     # Fetch item prices for all items at once
     item_names = [item['name'] for item in items]
 
-    # item_prices = frappe.db.sql("""
-    #     SELECT ip.item_code, ip.uom AS name, ip.price_list_rate , '1' as factor, ip.price_list
-    #     FROM `tabItem Price` ip
-    #     WHERE ip.item_code IN %s
-    # """, (tuple(item_names),), as_dict=True)
-    
-    # prices_dict = {}
-    # for price in item_prices:
-    #     if price['item_code'] not in prices_dict:
-    #         prices_dict[price['item_code']] = []
-    #     prices_dict[price['item_code']].append(price)
-
     item_prices = get_bulk_item_prices(item_names)  # fetch prices for all items in one query
 
     for item in items:
@@ -97,8 +86,12 @@ def get_items_prices(**kwargs):
 
         if uom_prices:  # Ensure prices exist for the item
             # Determine which UOM matches the default UOM (stock_uom)
-            default_uom_price = next((uom for uom in uom_prices if uom['name'] == item['stock_uom']), None)
-            if any([uom_prices[0].get('name'), uom_prices[1].get('name'), uom_prices[2].get('name')]):
+            default_uom_price = next((uom for uom in uom_prices if uom['name'] == item['stock_uom'] and uom['price_list'] == price_list_name), None)
+            if any([
+            uom_prices[0].get('price_list') == price_list_name,
+            uom_prices[1].get('price_list') == price_list_name,
+            uom_prices[2].get('price_list') == price_list_name
+        ]):
                 # Structure the item details with multiple UOMs
                 item_details = {
                     "Id": item['name'],
