@@ -108,8 +108,10 @@ doc_events = {
             ],
 	},
 	"Customer": {
-		"on_update": "elaguiely.elaguiely.functions.create_cart_after_enable_customer",
-		"on_update": "elaguiely.elaguiely.functions.create_favourite_after_enable_customer",
+		"on_update": [
+                    "elaguiely.elaguiely.functions.create_cart_after_enable_customer",
+		    "elaguiely.elaguiely.functions.create_favourite_after_enable_customer",
+                ]
 	}
 }
 
