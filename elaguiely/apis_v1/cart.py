@@ -130,6 +130,7 @@ def save_shopping_cart(**kwargs):
 				if product_data.get("totalquantity", 0) > actual_qty :
 					frappe.local.response['http_status_code'] = 400
 					frappe.local.response['message'] = _("No quantity avaliable for this item.")
+					return "No quantity avaliable for this item."
 
 				cart_item.qty = product_data.get("totalquantity", 0)
 
