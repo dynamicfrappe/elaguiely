@@ -111,10 +111,10 @@ def get_status_code(status):
         "Draft": 1,
         "On Hold": 1,
         "To Deliver and Bill": 2,
-        "To Bill To Deliver": 3,
-        "Completed": 4,
-        "Cancelled": 5,
-        "Closed": 6,
+        "To Bill": 2,
+        "To Deliver": 2,
+        "To Bill To Deliver": 2,
+        "Completed": 6,
     }
     return status_code_map.get(status, 1)
 
@@ -174,16 +174,17 @@ def get_order_status_list(current_status):
 @frappe.whitelist(allow_guest=True, methods=["GET", "POST"])
 @jwt_required
 def get_order_list(**kwargs):
-
     if frappe.request.method == 'GET':
         customer = kwargs.get("cid")
         orders = frappe.get_all(
             "Sales Order",
-            filters={"customer": customer},
+            filters={
+                "customer": customer,
+                "docstatus": ["!=", 2]  # Exclude canceled orders (docstatus=2)
+            },
             fields=["name", "grand_total", "status", "transaction_date", "docstatus"],
             order_by='-modified'
         )
-
         # Map the response to match your expected structure
         mapped_orders = []
         for order in orders:
@@ -314,7 +315,6 @@ def cancel_order(order):
 @jwt_required
 def reorder(**kwargs):
     order = kwargs.get("OrderID")
-    print('order ==> ', order)
     if frappe.db.exists("Sales Order" , order):
         doc = frappe.get_doc("Sales Order" , order)
         if doc.customer == frappe.local.user.get("customer"):
@@ -322,7 +322,6 @@ def reorder(**kwargs):
             cart.set("cart_item", [])  # Clear the items list
             cart.save()  # Save the changes to the cart
             frappe.db.commit()
-            # cart.append("cart_item", [])
             for i in doc.get("items"):
                 cart.append("cart_item",{
                     "item": i.item_code,
