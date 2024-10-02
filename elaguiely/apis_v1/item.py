@@ -124,3 +124,18 @@ def get_items_prices(**kwargs):
 
                 items_with_uom_and_prices.append(item_details)
     frappe.local.response["data"] = items_with_uom_and_prices
+
+
+@frappe.whitelist(allow_guest=True)
+@jwt_required
+def get_items_search(**kwargs):
+    # Fetch all items with 'item_name' field
+    items = frappe.get_all(
+        'Item',
+        fields=['item_name'],
+        ignore_permissions=True
+    )
+    # Extract only the item_name values
+    item_names = [item['item_name'] for item in items]
+    # Return the list of item names
+    frappe.local.response["data"] = item_names
