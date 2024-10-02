@@ -275,3 +275,73 @@ def get_order_details(**kwargs):
 
     # Return the mapped response
     frappe.local.response["data"] = mapped_order
+
+
+
+
+@frappe.whitelist(allow_guest=True)
+@jwt_required
+def cancel_order(**kwargs):
+	order = kwargs.get("orderid")
+	# return order
+
+
+	if frappe.db.exists("Sales Order" , order):
+		doc = frappe.get_doc("Sales Order" , order)
+		if doc.customer == frappe.local.user.get("customer"):
+			doc.docstatus = 1
+			doc.save(ignore_permissions=True)
+			frappe.db.commit()
+			return "order submmited"
+			doc.cancel()
+			frappe.db.commit()
+			frappe.local.response['http_status_code'] = 200
+			frappe.local.response['message'] = _("The Order Canceled")
+			return "The Order Canceled." 
+
+		else:
+			frappe.local.response['http_status_code'] = 400
+			frappe.local.response['message'] = _("This Customer not owner for this order")
+			return "No order found like this." 
+	else:
+		frappe.local.response['http_status_code'] = 400
+		frappe.local.response['message'] = _("No order found like this.")
+		return "No order found like this."
+	
+
+
+@frappe.whitelist(allow_guest=True)
+@jwt_required
+def reorder(**kwargs):
+	order = kwargs.get("orderid")
+
+	if frappe.db.exists("Sales Order" , order):
+		doc = frappe.get_doc("Sales Order" , order)
+		if doc.customer == frappe.local.user.get("customer"):
+			cart = frappe.get_doc("Cart" , frappe.get_value("Customer" , frappe.local.user.get("customer") , 'cart_id' ))
+
+			cart.append("cart_item", [])
+
+			for i in doc.get("items"):
+				cart.append("cart_item",{
+					"item" : i.item_code,
+					"item_group" : i.item_group,
+					"rate" : i.rate,
+					"qty":i.qty  
+				})
+			
+			cart.save(ignore_permission=True)
+			frappe.db.commit()
+			
+			
+			frappe.local.response['http_status_code'] = 200
+			frappe.local.response['message'] = _("The Order Canceled")
+
+		else:
+			frappe.local.response['http_status_code'] = 400
+			frappe.local.response['message'] = _("This Customer not owner for this order")
+			return "No order found like this." 
+	else:
+		frappe.local.response['http_status_code'] = 400
+		frappe.local.response['message'] = _("No order found like this.")
+		return "No order found like this."

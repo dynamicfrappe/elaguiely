@@ -2,8 +2,7 @@ import frappe
 from frappe import _
 
 from .jwt_decorator import jwt_required
-from .utils import get_bulk_item_prices
-
+from .utils import get_bulk_item_prices , stock_qty
 
 @frappe.whitelist(allow_guest=True)
 @jwt_required
@@ -86,6 +85,7 @@ def get_items_prices(**kwargs):
                     "Unit3OrignalPrice": uom_prices[2]['price'],
                     "Unit3Price": uom_prices[2]['price'],
                     "Unit3Factor": uom_prices[2]['factor'],
+                    "actual_qty":int(stock_qty(item['name']) or 0),
                     "SummaryEng": None,
                     "DescriptionEng": None,
                     "Summary": None,
