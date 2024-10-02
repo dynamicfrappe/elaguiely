@@ -178,6 +178,7 @@ def get_order_list(**kwargs):
         "Sales Order",
         filters={"customer": customer},
         fields=["name", "grand_total", "status", "transaction_date", "docstatus"],
+        order_by='-modified'
     )
 
     # Map the response to match your expected structure
