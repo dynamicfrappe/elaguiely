@@ -254,7 +254,7 @@ def get_order_details(**kwargs):
             "OrignalPrice": 0.0,
             "SellUnitOrignalPrice": 0.0,
             "SellUnitPoint": 0.0,
-            "ActualPrice": item.get("rate"),
+            "ActualPrice": item.get("amount"),
             "ItemTotalprice": item.get("amount"),
             "SellUnit": item.get("uom"),
             "SellUnitName": item.get("uom"),
