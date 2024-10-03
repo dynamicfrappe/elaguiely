@@ -158,16 +158,36 @@ def get_items_prices(**kwargs):
 @frappe.whitelist(allow_guest=True)
 @jwt_required
 def get_items_search(**kwargs):
-    # Fetch all items with 'item_name' field
+    filters = {}
     items = frappe.get_all(
         'Item',
-        fields=['item_name'],
+        fields=[
+            'name', 'item_name', 'item_code', 'arabic_name', 'image', 'description', 'brand', 'item_group',
+            'standard_rate', 'stock_uom'
+        ],
+        filters=filters,
         ignore_permissions=True
     )
-    # Extract only the item_name values
-    item_names = [item['item_name'] for item in items]
-    # Return the list of item names
-    frappe.local.response["data"] = item_names
+
+    # Fetch item prices for all items at once
+    item_names = [item['name'] for item in items]
+    customer = frappe.local.user.customer
+    item_prices = get_bulk_item_prices(item_names)  # fetch prices for all items in one query
+    price_list_name = frappe.get_value("Customer", customer, "default_price_list")
+    response = []
+    for item in items:
+        uom_prices = item_prices.get(item['name'], [])
+        if uom_prices:  # Ensure prices exist for the item
+            # Determine which UOM matches the default UOM (stock_uom)
+            default_uom_price = next((uom for uom in uom_prices if
+                                      uom['name'] == item['stock_uom'] and uom['price_list'] == price_list_name), None)
+            if any([
+                uom_prices[0].get('price_list') == price_list_name,
+                uom_prices[1].get('price_list') == price_list_name,
+                uom_prices[2].get('price_list') == price_list_name
+            ]):
+                response.append(item.item_name)
+    frappe.local.response["data"] = response
 
 
 @frappe.whitelist(allow_guest=True)
