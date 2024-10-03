@@ -115,7 +115,7 @@ def get_status_code(status):
         "To Deliver": 2,
         "To Bill To Deliver": 2,
         "Completed": 6,
-        'Canceled': 7
+        'Cancelled': 7
     }
     return status_code_map.get(status, 1)
 
