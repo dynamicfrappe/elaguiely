@@ -115,6 +115,7 @@ def get_status_code(status):
         "To Deliver": 2,
         "To Bill To Deliver": 2,
         "Completed": 6,
+        'Canceled': 7
     }
     return status_code_map.get(status, 1)
 
@@ -180,7 +181,6 @@ def get_order_list(**kwargs):
             "Sales Order",
             filters={
                 "customer": customer,
-                "docstatus": ["!=", 2]  # Exclude canceled orders (docstatus=2)
             },
             fields=["name", "grand_total", "status", "transaction_date", "docstatus"],
             order_by='-modified'
