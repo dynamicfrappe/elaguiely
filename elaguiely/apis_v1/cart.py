@@ -30,7 +30,7 @@ def cart_details(**kwargs):
 		products = []
 		for item in cart.cart_item:
 			uom_prices = get_item_prices(item.item)
-			qty = int(stock_qty(customer_id, item['name']) or 0)
+			qty = int(stock_qty(customer_id, item.get('item_name')) or 0)
 			product = {
 				"Id": item.get('item'),
 				"PreviewImage": item.get('image'),
