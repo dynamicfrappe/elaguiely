@@ -119,9 +119,58 @@ def register(**kwargs):
 	name = kwargs.get("name")
 	phone = kwargs.get("mob")
 	email = kwargs.get("email")
+	customer_id = kwargs.get("id")
 	if not phone and not email:
-		frappe.local.response['http_status_code'] = 400
-		frappe.local.response['message'] = _("Phone number or email are required")
+		if id:
+			# User / customer data
+			customer_details = frappe.db.get_all("Customer", filters={'name': customer_id}, fields=['customer_name', 'image', 'customer_group', 'customer_primary_address'])
+			customer_name = customer_details[0].get('customer_name')
+			customer_image = customer_details[0].get('image')
+			customer_group = customer_details[0].get('customer_group')
+			customer_address = customer_details[0].get('customer_primary_address')
+			address = frappe.db.get_list("Address", filters={'name': customer_address}, fields= ['city', 'county', 'state', 'country', 'latitude', 'longitude', 'address_line1'])
+			print(address)
+			user = frappe.db.get_all('User', filters={'customer': customer_name}, fields=['email','mobile_no', 'name'])
+			if user:
+				email = user[0].get("email")
+				phone_number = user[0].get("mobile_no")
+				engname = user[0].get("name")
+				
+				# Append response
+				response = {
+					"FullName": customer_name,
+					"BusinessName": customer_name,
+					"Business": customer_group,
+					"Email": email or "",
+					"PhoneNumber": phone_number,
+					"StreetAddress": address[0].get("address_line1") if address else "",
+					"Latitude": address[0].get("latitude") if address else "",
+					"Longitude": address[0].get("longitude") if address else "",
+					"Cusclass": customer_group,
+					"City": address[0].get("city")  if address else "",
+					"State": address[0].get("state")  if address else "",
+					"Country": address[0].get("country")  if address else "",
+					"ID": customer_name,
+					"CustomerPassword": None,
+					"ConfirmPassword": None,
+					"Cus_ID": None,
+					"CusclassName": customer_group,
+					"CityName": address[0].get("city") if address else "",
+					"StateName": address[0].get("state") if address else "",
+					"CountryName": address[0].get("country") if address else "",
+					"sellerphone": None,
+					"sellerphone2": None,
+					"sellername": None,
+					"ShopImg": customer_image or "",
+					"notificationNo": None,
+					"UsernameEng": engname
+				}
+
+			frappe.local.response['data'] = response 
+			return
+		else:
+			frappe.local.response['http_status_code'] = 400
+			frappe.local.response['message'] = _("Phone number or email are required")
 		return
 
 	# Check if a user with the provided phone and email already exists

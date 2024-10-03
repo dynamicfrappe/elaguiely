@@ -36,6 +36,7 @@ def request_sales_order(**kwargs):
         sales_order = frappe.new_doc("Sales Order")
         sales_order.customer = customer.name
         sales_order.transaction_date = frappe.utils.now()  # You can customize this
+        sales_order.posa_notes = kwargs.get("notes")
 
         # Convert to datetime object
         date_object = datetime.strptime(kwargs.get("DeliveryDate"), "%Y-%m-%d")
