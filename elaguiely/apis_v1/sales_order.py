@@ -36,6 +36,7 @@ def request_sales_order(**kwargs):
         sales_order = frappe.new_doc("Sales Order")
         sales_order.customer = customer.name
         sales_order.transaction_date = frappe.utils.now()  # You can customize this
+        sales_order.posa_notes = kwargs.get("notes")
 
         # Convert to datetime object
         date_object = datetime.strptime(kwargs.get("DeliveryDate"), "%Y-%m-%d")
@@ -115,6 +116,7 @@ def get_status_code(status):
         "To Deliver": 2,
         "To Bill To Deliver": 2,
         "Completed": 6,
+        'Cancelled': 7
     }
     return status_code_map.get(status, 1)
 
@@ -180,7 +182,6 @@ def get_order_list(**kwargs):
             "Sales Order",
             filters={
                 "customer": customer,
-                "docstatus": ["!=", 2]  # Exclude canceled orders (docstatus=2)
             },
             fields=["name", "grand_total", "status", "transaction_date", "docstatus"],
             order_by='-modified'
