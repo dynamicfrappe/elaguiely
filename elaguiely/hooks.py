@@ -109,9 +109,9 @@ doc_events = {
 	},
 	"Customer": {
 		"on_update": [
-                    "elaguiely.elaguiely.functions.create_cart_after_enable_customer",
+            "elaguiely.elaguiely.functions.create_cart_after_enable_customer",
 		    "elaguiely.elaguiely.functions.create_favourite_after_enable_customer",
-                ]
+            ]
 	}
 }
 
@@ -174,6 +174,7 @@ override_whitelisted_methods = {
 	"EmployeeInvoice": "elaguiely.apis_v1.sales_order.get_order_details",
 	"SaveFavoriteItem" : "elaguiely.apis_v1.item.save_favourite_item",
 	"ReOrder": "elaguiely.apis_v1.sales_order.reorder",
+	"BestSellerItems": "elaguiely.apis_v1.item.get_best_selling_items",
 }
 
 #

@@ -299,10 +299,11 @@ def get_bulk_item_prices(item_names):
       idx = item_uom_count[item_code]
 
       if idx < 3:  # We only store up to 3 UOMs
+         # factor = frappe.get_value("UOM Conversion Detail", filters={'parent': price['item_code'], 'name': price['uom']}, fieldname='conversion_factor')
          item_prices[item_code][idx] = {
             'name': price['uom'],
             'price': price['price_list_rate'],
-            'factor': 1.0,  # Adjust this if you have actual UOM factor logic
+            'factor': 1.00,
             'price_list': price['price_list']
          }
          item_uom_count[item_code] += 1
@@ -311,8 +312,11 @@ def get_bulk_item_prices(item_names):
 
 
 
-def stock_qty (item_code , uom):
+def stock_qty (customer, item_code) :
 	default_warehouse = frappe.db.get_single_value('Stock Settings', 'default_warehouse')
-	actual_qty = frappe.get_value("Bin" , {"item_code":item_code , "warehouse":default_warehouse , "stock_uom" :uom} , 'actual_qty')
-
+	actual_qty = frappe.get_value("Bin" , {"item_code":item_code , "warehouse":default_warehouse} , 'actual_qty')
 	return actual_qty
+
+
+
+
