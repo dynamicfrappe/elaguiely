@@ -24,7 +24,7 @@ def get_items_prices(**kwargs):
         filters={'parent': frappe.get_value("Favorite", {'customer': customer_id}, 'name')}, 
         fields=['item']) if frappe.get_value("Favorite", {'customer': customer_id}, 'name') else []
     fav_items = [item['item'] for item in fav_items]
-    print(fav_items)
+    # print(fav_items)
     filters = {}
     if item_group:
         filters['item_group'] = item_group
@@ -77,7 +77,7 @@ def get_items_prices(**kwargs):
         # Fetch prices related to the item
         uom_prices = item_prices.get(item['name'], [])
 
-        print(uom_prices)
+        # print(uom_prices)
 
         if uom_prices:  # Ensure prices exist for the item
             # Determine which UOM matches the default UOM (stock_uom)
@@ -100,21 +100,21 @@ def get_items_prices(**kwargs):
                     "Unit1OrignalPrice": uom_prices[0]['price'],
                     "Unit1Price": uom_prices[0]['price'],
                     "Unit1Factor": uom_prices[0]['factor'],
-                    "actual_qty1": qty * int(uom_prices[0]['factor'] or 0),
+                    "actual_qty1": int(qty / uom_prices[0]['factor']) if uom_prices[0]['factor'] not in [0, None] else 0,
                     "U_Code2": uom_prices[1]['name'],
                     "Unit2Name": uom_prices[1]['name'],
                     "Unit2NameEng": uom_prices[1]['name'],
                     "Unit2OrignalPrice": uom_prices[1]['price'],
                     "Unit2Price": uom_prices[1]['price'],
                     "Unit2Factor": uom_prices[1]['factor'],
-                    "actual_qty2": qty * int(uom_prices[1]['factor'] or 0),
+                    "actual_qty2": int(qty / uom_prices[1]['factor']) if uom_prices[1]['factor'] not in [0, None] else 0,
                     "U_Code3": uom_prices[2]['name'],
                     "Unit3Name": uom_prices[2]['name'],
                     "Unit3NameEng": uom_prices[2]['name'],
                     "Unit3OrignalPrice": uom_prices[2]['price'],
                     "Unit3Price": uom_prices[2]['price'],
                     "Unit3Factor": uom_prices[2]['factor'],
-                    "actual_qty3":qty * int(uom_prices[2]['factor'] or 0),
+                    "actual_qty3": int(qty / uom_prices[2]['factor']) if uom_prices[2]['factor'] not in [0, None] else 0,
                     "SummaryEng": None,
                     "DescriptionEng": None,
                     "Summary": None,
@@ -239,21 +239,21 @@ def get_best_selling_items(**kwargs):
                     "Unit1OrignalPrice": uom_prices[0]['price'],
                     "Unit1Price": uom_prices[0]['price'],
                     "Unit1Factor": uom_prices[0]['factor'],
-                    "actual_qty1": qty * int(uom_prices[0]['factor'] or 0),
+                    "actual_qty1": int(qty / uom_prices[0]['factor']) if uom_prices[0]['factor'] not in [0, None] else 0,
                     "U_Code2": uom_prices[1]['name'],
                     "Unit2Name": uom_prices[1]['name'],
                     "Unit2NameEng": uom_prices[1]['name'],
                     "Unit2OrignalPrice": uom_prices[1]['price'],
                     "Unit2Price": uom_prices[1]['price'],
                     "Unit2Factor": uom_prices[1]['factor'],
-                    "actual_qty2": qty * int(uom_prices[1]['factor'] or 0),
+                    "actual_qty2": int(qty / uom_prices[1]['factor']) if uom_prices[1]['factor'] not in [0, None] else 0,
                     "U_Code3": uom_prices[2]['name'],
                     "Unit3Name": uom_prices[2]['name'],
                     "Unit3NameEng": uom_prices[2]['name'],
                     "Unit3OrignalPrice": uom_prices[2]['price'],
                     "Unit3Price": uom_prices[2]['price'],
                     "Unit3Factor": uom_prices[2]['factor'],
-                    "actual_qty3":qty * int(uom_prices[2]['factor'] or 0),
+                    "actual_qty3": int(qty / uom_prices[2]['factor']) if uom_prices[2]['factor'] not in [0, None] else 0,
                     "SummaryEng": None,
                     "DescriptionEng": None,
                     "Summary": None,

@@ -148,7 +148,6 @@ override_whitelisted_methods = {
 	"AllZone": "elaguiely.ts_api.get_all_zones",
 	"AllCity": "elaguiely.ts_api.get_all_cities",
 	"AllCusClass": "elaguiely.ts_api.get_customer_class",
-	"CustomerReg": "elaguiely.ts_api.get_customer_profile",
 	"BestSellerItems": "elaguiely.ts_api.get_best_seller_items",
 	"EmployeeInvoice": "elaguiely.ts_api.get_invoice",
 	"Survey": "elaguiely.ts_api.evaluate_order",
