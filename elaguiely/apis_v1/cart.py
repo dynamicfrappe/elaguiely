@@ -3,7 +3,7 @@ import json
 from frappe import _
 
 from elaguiely.apis_v1.jwt_decorator import jwt_required
-from elaguiely.apis_v1.utils import get_item_prices
+from elaguiely.apis_v1.utils import get_item_prices, stock_qty
 
 
 @frappe.whitelist(allow_guest=True)
@@ -30,6 +30,7 @@ def cart_details(**kwargs):
 		products = []
 		for item in cart.cart_item:
 			uom_prices = get_item_prices(item.item)
+			qty = int(stock_qty(customer_id, item['name']) or 0)
 			product = {
 				"Id": item.get('item'),
 				"PreviewImage": item.get('image'),
@@ -42,6 +43,7 @@ def cart_details(**kwargs):
 				"Unit1Price": uom_prices[0]['price'],
 				"Unit1Point": 1.00,
 				"Unit1Factor": uom_prices[0]['factor'],
+				"actual_qty1": int(qty / uom_prices[0]['factor']) if uom_prices[0]['factor'] not in [0, None] else 0,
 				"Unit2Name": uom_prices[1]['name'],
 				"Unit2NameEng": uom_prices[1]['name'],
 				"U_Code2": uom_prices[1]['name'],
@@ -49,6 +51,7 @@ def cart_details(**kwargs):
 				"Unit2Price": uom_prices[1]['price'],
 				"Unit2Point": 1.00,
 				"Unit2Factor": uom_prices[1]['factor'],
+				"actual_qty2": int(qty / uom_prices[1]['factor']) if uom_prices[1]['factor'] not in [0, None] else 0,
 				"Unit3Name": uom_prices[2]['name'],
 				"Unit3NameEng": uom_prices[2]['name'],
 				"U_Code3": uom_prices[2]['name'],
@@ -56,6 +59,7 @@ def cart_details(**kwargs):
 				"Unit3Price": uom_prices[2]['price'],
 				"Unit3Point": 1.00,
 				"Unit3Factor": uom_prices[2]['factor'],
+				"actual_qty3": int(qty / uom_prices[2]['factor']) if uom_prices[2]['factor'] not in [0, None] else 0,
 				"SummaryEng": "None",
 				"DescriptionEng": "None",
 				"Summary": "None",
@@ -79,7 +83,7 @@ def cart_details(**kwargs):
 				"IsFavourite": None,
 				"SellPoint": None,
 				"OrignalSellPoint": None,
-				"MinSalesOrder": None,
+				"MinSalesOrder": 1,
 				"Isbundle": None,
 				"NotChangeUnit": None
 			}
