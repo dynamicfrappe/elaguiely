@@ -299,11 +299,11 @@ def get_bulk_item_prices(item_names):
       idx = item_uom_count[item_code]
 
       if idx < 3:  # We only store up to 3 UOMs
-         # factor = frappe.get_value("UOM Conversion Detail", filters={'parent': price['item_code'], 'name': price['uom']}, fieldname='conversion_factor')
+         factor = frappe.get_value("UOM Conversion Detail", filters={'parent': item_code, 'uom': price['uom']}, fieldname='conversion_factor')
          item_prices[item_code][idx] = {
             'name': price['uom'],
             'price': price['price_list_rate'],
-            'factor': 1.00,
+            'factor': factor,
             'price_list': price['price_list']
          }
          item_uom_count[item_code] += 1
