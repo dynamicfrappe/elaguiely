@@ -1,0 +1,55 @@
+
+ElogailyStore
+----------------
+Auth
+    ✓ GET Login                      >> auth/auth
+    ✓ GET Customer Registration      >> auth/auth
+    ✓ GET customer profile           >> auth/auth
+    ✓ GET Get Gov                    >> auth/customer
+    ✓ GET Get City                   >> auth/customer
+    ✓ GET Get Zone                   >> auth/customer
+    ✓ GET Get Customer Class         >> auth/customer
+    GET Send SMS
+    GET forget pass
+Home
+    ✓ GET Get Main Group             >> home/category
+    ✓ GET Get Sub Group              >> home/category
+    ✓ GET Get Supplier               >> home/supplier
+    ✓ GET Get Category By Supplier   >> home/supplier
+    ✓ GET Get Best Seller Items      >> home/items
+    GET Get Offer
+    GET Get Offer details
+Items
+    ✓ GET Get items                  >> item/items
+    ✓ GET Get fav Items              >> item/items
+    ✓ GET Get Items by search txt    >> item/items
+    ✓ GET Save fav Items             >> item/items
+    ✓ GET Get Items Search List      >> item/items
+    GET Get alternative items
+Cart
+    ✓ POST Save Shopping Cart        >> cart/cart
+    ✓ GET Get Shopping Cart          >> cart/cart
+    ✓ GET Delete Shopping Cart del.  >> cart/cart
+Order
+    ✓ GET Request order              >> sales_order/sales_order
+    ✓ GET Get Order List             >> sales_order/sales_order
+    ✓ POST Cancel Order              >> sales_order/sales_order
+    ✓ GET ReOrder                    >> sales_order/sales_order
+    ✓ GET Get Invoice                >> sales_order/sales_order
+    POST Evaluate Order
+Customer Profile
+    GET get Customer Address
+    GET Add Customer Address
+    GET Edit Customer Address
+    GET Delete Customer Address
+    GET change Address
+    POST PostFile image
+    GET Change password
+    GET Get Notification Count
+    GET Add Complaint And Suggestions...
+    GET Get Delivery Period
+GET Get Al Reply
+GET Get Reply
+GET Get Order Gift
+GET Get Bonus adv
+GET Log Out

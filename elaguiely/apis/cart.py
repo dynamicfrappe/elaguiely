@@ -1,4 +1,4 @@
-qimport frappe
+import frappe
 from frappe import _ 
 from elaguiely.elaguiely.functions import (create_customer ,
 					   								 create_cart ,

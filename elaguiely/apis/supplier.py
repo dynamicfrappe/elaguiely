@@ -36,8 +36,7 @@ def get_all_suppliers(**kwargs):
 @frappe.whitelist(allow_guest=True)
 @jwt_required
 def get_category_by_supplier(supplierid, **kwargs):
-    print(55555555555)
-
+    
     supplier = frappe.get_doc("Brand", supplierid)
     if not supplier:
         return {"message": "Invalid", "data": []}

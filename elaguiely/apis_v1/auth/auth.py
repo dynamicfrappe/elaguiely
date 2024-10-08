@@ -1,10 +1,8 @@
 import datetime
-
 import frappe
-import jwt
 from frappe import _
-
-from .jwt_decorator import SECRET_KEY
+import jwt
+from elaguiely.apis_v1.jwt_decorator import SECRET_KEY
 
 
 def generate_jwt_token(user):
@@ -144,8 +142,8 @@ def register(**kwargs):
 					"Email": email or "",
 					"PhoneNumber": phone_number,
 					"StreetAddress": address[0].get("address_line1") if address else "",
-					"Latitude": address[0].get("latitude") if address else "",
-					"Longitude": address[0].get("longitude") if address else "",
+					"Latitude": address[0].get("latitude") if address else 0.0,
+					"Longitude": address[0].get("longitude") if address else 0.0,
 					"Cusclass": customer_group,
 					"City": address[0].get("city")  if address else "",
 					"State": address[0].get("state")  if address else "",
@@ -268,7 +266,7 @@ def create_address(kwargs, customer):
 	address.insert(ignore_permissions=True)
 	return address
 
-
+# Why it's whitelisted?
 @frappe.whitelist(allow_guest=True)
 def create_user_if_not_exists(customer_name, **kwargs):
     """
@@ -315,3 +313,4 @@ def assign_roles(user, role_profile_name):
     role_profile = frappe.get_doc("Role Profile", role_profile_name)
     roles = [role.role for role in role_profile.roles]
     user.add_roles(*roles)
+
