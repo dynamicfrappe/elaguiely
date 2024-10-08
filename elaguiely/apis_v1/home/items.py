@@ -3,7 +3,7 @@ from frappe import _
 from elaguiely.apis_v1.utils import get_bulk_item_prices , stock_qty
 from elaguiely.apis_v1.jwt_decorator import jwt_required
 
-
+# First Testing DONE 
 @frappe.whitelist(allow_guest=True)
 @jwt_required
 def get_best_selling_items(**kwargs):
@@ -23,7 +23,15 @@ def get_best_selling_items(**kwargs):
 	item_prices = get_bulk_item_prices(item_names)
 	price_list_name = frappe.get_value("Customer", customer, "default_price_list") or ""
 
+	# Fetch favorite items
+	fav_items = frappe.get_list("Favorite Item", 
+		filters={'parent': frappe.get_value("Favorite", {'customer': customer}, 'name')}, 
+		fields=['item']) if frappe.get_value("Favorite", {'customer': customer}, 'name') else []
+	fav_items = [item['item'] for item in fav_items]
+	
 	for item in items: 
+		# Fetch favorite field
+		default_fav = item['name'] in fav_items
 		# Fetch prices related to the item
 		i = frappe.get_doc("Item", item.get("name"))
 		uom_prices = item_prices.get(item['name'], [])
@@ -86,7 +94,7 @@ def get_best_selling_items(**kwargs):
 					"TotalQuantity": 1,
 					"MG_code": i.item_group or '',
 					"SG_Code": i.brand or '',
-					"IsFavourite": False,
+					"IsFavourite": default_fav,
 					"SellPoint": None,
 					"OrignalSellPoint": None,
 					"MinSalesOrder": 1,
