@@ -157,12 +157,16 @@ def get_items_prices(**kwargs):
 def get_items_search(**kwargs):
     customer = frappe.local.user.customer
     if not customer:
-        frappe.throw(_("Customer not found for the user."), frappe.DoesNotExistError)
+        frappe.local.response["message"] = _("CustomerID is required")
+        frappe.local.response['http_status_code'] = 400
+        return
 
     # Fetch the default price list for the customer
     price_list_name = frappe.get_value("Customer", customer, "default_price_list")
     if not price_list_name:
-        frappe.throw(_("Default price list not set for the customer."), frappe.DoesNotExistError)
+        frappe.local.response["message"] = _("Default price list not set for the customer.")
+        frappe.local.response['http_status_code'] = 404
+        return
 
     items = frappe.get_all('Item', fields=['name', 'item_name'], ignore_permissions=True )
     response = []
@@ -182,12 +186,16 @@ def save_favorite_item(**kwargs):
     item_code = kwargs.get("itemcode")
 
     if not customer_id or not item_code:
-        frappe.throw(_("Customer ID and Item Code are required."), frappe.MandatoryError)
+        frappe.local.response["message"] = _("Customer ID and Item Code are required.")
+        frappe.local.response['http_status_code'] = 400
+        return
 
     favorite_doc_name = frappe.get_value("Favorite", {'customer': customer_id}, 'name')
 
     if not favorite_doc_name:
-        frappe.throw(_("No favorite doc found for this customer."), frappe.DoesNotExistError)
+        frappe.local.response["message"] = _("No favorite doc found for this customer.")
+        frappe.local.response['http_status_code'] = 404
+        return
     
     fav_item = frappe.db.get_value("Favorite Item", {"parent": favorite_doc_name, "item": item_code}, "name")
 
@@ -200,7 +208,9 @@ def save_favorite_item(**kwargs):
     try:
         # Check if the item exists
         if not frappe.db.exists("Item", item_code):
-            frappe.throw(_("The item {0} does not exist.").format(item_code), frappe.DoesNotExistError)
+            frappe.local.response["message"] = _("The item is not found.")
+            frappe.local.response['http_status_code'] = 404
+            return
 
         new_fav_item = frappe.get_doc({
             'doctype': 'Favorite Item',
@@ -216,6 +226,8 @@ def save_favorite_item(**kwargs):
     
     except Exception as e:
         frappe.logger().error(f"Error marking item {item_code} as favorite for customer {customer_id}: {str(e)}")
-        frappe.throw(_("An error occurred while marking the item as favorite. Please try again."))
+        frappe.local.response["message"] = _("An error occurred while marking the item as favorite. Please try again.")
+        frappe.local.response['http_status_code'] = 500
+        return
 
 
