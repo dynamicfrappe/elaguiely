@@ -46,7 +46,7 @@ def get_items_prices(**kwargs):
     if brand:
         filters['brand'] = brand
     if item_name:
-        filters['name'] = item_name
+        filters['item_name'] = item_name
     if is_fav:
         filters['name'] = ['in', fav_items]
 
