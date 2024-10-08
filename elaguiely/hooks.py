@@ -147,34 +147,34 @@ doc_events = {
 override_whitelisted_methods = {
 	
 	# Auth Routing
-	"login_user": "elaguiely.apis_v1.auth.login",
-	"CustomerReg": "elaguiely.apis_v1.auth.register",
-	"AllZone": "elaguiely.apis_v1.auth.get_all_zones",
-	"AllCity": "elaguiely.apis_v1.auth.get_all_cities",
-	"AllGov": "elaguiely.apis_v1.auth.get_all_governs",
-	"AllCusClass": "elaguiely.apis_v1.auth.get_customer_class",
+	"login_user": "elaguiely.apis_v1.auth.auth.login",
+	"CustomerReg": "elaguiely.apis_v1.auth.auth.register",
+	"AllZone": "elaguiely.apis_v1.auth.customer.get_all_zones",
+	"AllCity": "elaguiely.apis_v1.auth.customer.get_all_cities",
+	"AllGov": "elaguiely.apis_v1.auth.customer.get_all_governs",
+	"AllCusClass": "elaguiely.apis_v1.auth.customer.get_customer_class",
 	
 	# Home Routing
-	"Category": "elaguiely.apis_v1.home.get_categories",
-	"Supplier": "elaguiely.apis_v1.home.get_all_suppliers",
-	"CategoryBySupplier": "elaguiely.apis_v1.home.get_category_by_supplier",
-	"BestSellerItems": "elaguiely.apis_v1.home.get_best_selling_items",
+	"Category": "elaguiely.apis_v1.home.category.get_categories",
+	"Supplier": "elaguiely.apis_v1.home.supplier.get_all_suppliers",
+	"CategoryBySupplier": "elaguiely.apis_v1.home.supplier.get_category_by_supplier",
+	"BestSellerItems": "elaguiely.apis_v1.home.items.get_best_selling_items",
 
 	# Items Routing
-	"ItemsPrice": "elaguiely.apis_v1.item.get_items_prices",
-	"ItemsSearch": "elaguiely.apis_v1.item.get_items_search",
-	"SaveFavoriteItem" : "elaguiely.apis_v1.item.save_favourite_item",
+	"ItemsPrice": "elaguiely.apis_v1.item.item.get_items_prices",
+	"ItemsSearch": "elaguiely.apis_v1.item.item.get_items_search",
+	"SaveFavoriteItem" : "elaguiely.apis_v1.item.item.save_favourite_item",
 
 	# Cart Routing
-	"SaveShoppingCart" : "elaguiely.apis_v1.cart.save_shopping_cart",
-	"Cart": "elaguiely.apis_v1.cart.cart_details",
-	"DeleteShoppingCart": "elaguiely.apis_v1.cart.clear_shopping_cart",
+	"SaveShoppingCart" : "elaguiely.apis_v1.cart.cart.save_shopping_cart",
+	"Cart": "elaguiely.apis_v1.cart.cart.cart_details",
+	"DeleteShoppingCart": "elaguiely.apis_v1.cart.cart.clear_shopping_cart",
 
 	# Order Routing
-	"CreateOrder": "elaguiely.apis_v1.sales_order.request_sales_order",
-	"OrderHistory": "elaguiely.apis_v1.sales_order.get_order_list",
-	"EmployeeInvoice": "elaguiely.apis_v1.sales_order.get_order_details",
-	"ReOrder": "elaguiely.apis_v1.sales_order.reorder",
+	"CreateOrder": "elaguiely.apis_v1.sales_order.sales_order.request_sales_order",
+	"OrderHistory": "elaguiely.apis_v1.sales_order.sales_order.get_order_list",
+	"EmployeeInvoice": "elaguiely.apis_v1.sales_order.sales_order.get_order_details",
+	"ReOrder": "elaguiely.apis_v1.sales_order.sales_order.reorder",
 	
 }
 
