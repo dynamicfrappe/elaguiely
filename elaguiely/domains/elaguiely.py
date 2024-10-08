@@ -46,6 +46,12 @@ data = {
                     "fieldtype": "Link",
                     "insert_after": "tax_category",
                     "options": "Warehouse" ,
+                },
+                {  
+                    "label" : "Maximum Number of Orders:",
+                    "fieldname": "maximum_orders",
+                    "fieldtype": "Int",
+                    "insert_after": "warehouse",
                 }
             ],
             "Address":
@@ -91,16 +97,7 @@ data = {
                "label"        : _("Arabic Name"),
                "reqd" : True
             },
-              {
-               "fieldname"    : "category",
-               "fieldtype"    : "Link",
-               "insert_after" : "item_group",
-               "options"      :"Category" ,
-               "label"        : _("Category"),
-               "reqd" : False ,
-               
-            },
-              {
+            {
                 "label": "Best Sell",
                 "fieldname": "best_sell",
                 "fieldtype": "Check",
@@ -108,7 +105,7 @@ data = {
                 "read_only" : 0  ,
             
             },
-             {
+            {
                 "label": "New Arrive",
                 "fieldname": "new_arrive",
                 "fieldtype": "Check",
@@ -117,13 +114,12 @@ data = {
             
             },
            
-             {
+            {
                 "label": "Max Order QTY",
                 "fieldname": "max_order",
                 "fieldtype": "Data",
                 "insert_after": "over_billing_allowance",
                 "read_only" : 0  ,
-            
             },
         ] ,
         "Brand" :[
@@ -132,25 +128,34 @@ data = {
                "fieldtype" : "Data",
                "insert_after" : "brand",
                "label" : _("Arabic Name"),
-               "reqd" : 1
+               "reqd" : 1 ,
             },
             {
-               "fieldname" : "sub_catgories",
-               "fieldtype" : "Table",
-               "insert_after" : "description",
-               "label" : _("Sub Categories"),
+                "fieldname" : "sub_catgories",
+                "fieldtype" : "Table",
+                "insert_after" : "description",
+                "label" : _("Sub Categories"),
                 "options": "Brand Categories",
-               "reqd" : 0
+                "reqd" : 0 ,
             }
         ] ,
         "Pricing Rule":[
             {
                 "fieldname"    : "image",
-               "fieldtype"    : "Attach Image",
-               "insert_after" : "disable",
-               "label"        : _("Image"),
-               "reqd" : 0
+                "fieldtype"    : "Attach Image",
+                "insert_after" : "disable",
+                "label"        : _("Image"),
+                "reqd" : 0 ,
 
+            }
+        ],
+        "Selling Settings":[
+            {
+                "fieldname"    : "minimum_amount",
+                "fieldtype"    : "Float",
+                "insert_after" : "customer_group",
+                "label"        : _("Minimum Amount"),
+                "default" : 0.0
             }
         ],
         "Item Group" :[
@@ -204,6 +209,14 @@ data = {
                 # "hidden": 1,
             },
 
+        ],
+        "UOM Conversion Detail" : [
+            {
+                "fieldname"    : "maximum_qty",
+                "fieldtype"    : "Int",
+                "insert_after" : "conversion_factor",
+                "label"        : _("Maximum Quantity"),
+            }
         ]
     },
 

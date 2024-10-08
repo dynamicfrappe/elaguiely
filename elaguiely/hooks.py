@@ -145,35 +145,37 @@ doc_events = {
 # ------------------------------
 #
 override_whitelisted_methods = {
-	"AllZone": "elaguiely.ts_api.get_all_zones",
-	"AllCity": "elaguiely.ts_api.get_all_cities",
-	"AllCusClass": "elaguiely.ts_api.get_customer_class",
-	"BestSellerItems": "elaguiely.ts_api.get_best_seller_items",
-	"EmployeeInvoice": "elaguiely.ts_api.get_invoice",
-	"Survey": "elaguiely.ts_api.evaluate_order",
-	"OrderHistory": "elaguiely.ts_api.cancel_order",
-	"ItemsSearch": "elaguiely.ts_api.get_items_serach_list",
-	"AllGov": "elaguiely.ts_api.get_all_governs",
-	# "Category": "elaguiely.ts_api.get_categories",
-	# "SaveShoppingCart" : "elaguiely.ts_api.save_shopping_cart",
-
+	
 	# Auth Routing
 	"login_user": "elaguiely.apis_v1.auth.login",
 	"CustomerReg": "elaguiely.apis_v1.auth.register",
+	"AllZone": "elaguiely.apis_v1.auth.get_all_zones",
+	"AllCity": "elaguiely.apis_v1.auth.get_all_cities",
+	"AllGov": "elaguiely.apis_v1.auth.get_all_governs",
+	"AllCusClass": "elaguiely.apis_v1.auth.get_customer_class",
+	
+	# Home Routing
+	"Category": "elaguiely.apis_v1.home.get_categories",
+	"Supplier": "elaguiely.apis_v1.home.get_all_suppliers",
+	"CategoryBySupplier": "elaguiely.apis_v1.home.get_category_by_supplier",
+	"BestSellerItems": "elaguiely.apis_v1.home.get_best_selling_items",
+
+	# Items Routing
 	"ItemsPrice": "elaguiely.apis_v1.item.get_items_prices",
 	"ItemsSearch": "elaguiely.apis_v1.item.get_items_search",
-	"Supplier": "elaguiely.apis_v1.supplier.get_all_suppliers",
-	"CategoryBySupplier": "elaguiely.apis_v1.supplier.get_category_by_supplier",
-	"Category": "elaguiely.apis_v1.category.get_categories",
+	"SaveFavoriteItem" : "elaguiely.apis_v1.item.save_favourite_item",
+
+	# Cart Routing
 	"SaveShoppingCart" : "elaguiely.apis_v1.cart.save_shopping_cart",
 	"Cart": "elaguiely.apis_v1.cart.cart_details",
 	"DeleteShoppingCart": "elaguiely.apis_v1.cart.clear_shopping_cart",
+
+	# Order Routing
 	"CreateOrder": "elaguiely.apis_v1.sales_order.request_sales_order",
 	"OrderHistory": "elaguiely.apis_v1.sales_order.get_order_list",
 	"EmployeeInvoice": "elaguiely.apis_v1.sales_order.get_order_details",
-	"SaveFavoriteItem" : "elaguiely.apis_v1.item.save_favourite_item",
 	"ReOrder": "elaguiely.apis_v1.sales_order.reorder",
-	"BestSellerItems": "elaguiely.apis_v1.item.get_best_selling_items",
+	
 }
 
 #
