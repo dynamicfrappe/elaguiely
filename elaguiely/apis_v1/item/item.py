@@ -1,8 +1,8 @@
 import frappe
 from frappe import _
 
-from .jwt_decorator import jwt_required
-from .utils import get_bulk_item_prices , stock_qty
+from elaguiely.apis_v1.jwt_decorator import jwt_required
+from elaguiely.apis_v1.utils import get_bulk_item_prices , stock_qty
 
 @frappe.whitelist(allow_guest=True)
 @jwt_required

@@ -3,7 +3,6 @@ import frappe
 from frappe import _
 from frappe.utils import today
 import time 
-from elaguiely.elaguiely.functions import create_favorite 
 from dynamic.controllers.sales_order import get_all_qty_reserved
 
 domains = frappe.get_active_domains()
