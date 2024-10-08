@@ -163,7 +163,7 @@ override_whitelisted_methods = {
 	# Items Routing
 	"ItemsPrice": "elaguiely.apis_v1.item.item.get_items_prices",
 	"ItemsSearch": "elaguiely.apis_v1.item.item.get_items_search",
-	"SaveFavoriteItem" : "elaguiely.apis_v1.item.item.save_favourite_item",
+	"SaveFavoriteItem" : "elaguiely.apis_v1.item.item.save_favorite_item",
 
 	# Cart Routing
 	"SaveShoppingCart" : "elaguiely.apis_v1.cart.cart.save_shopping_cart",
