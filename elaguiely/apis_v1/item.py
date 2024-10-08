@@ -101,7 +101,7 @@ def get_items_prices(**kwargs):
                     "Unit1Price": uom_prices[0]['price'],
                     "Unit1Factor": uom_prices[0]['factor'],
                     "actual_qty1": int(qty / uom_prices[0]['factor']) if uom_prices[0]['factor'] not in [0, None] else 0,
-                    "maximum_qty2": uom_prices[0]['max_qty'],
+                    "maximum_qty1": uom_prices[0]['max_qty'],
                     "U_Code2": uom_prices[1]['name'],
                     "Unit2Name": uom_prices[1]['name'],
                     "Unit2NameEng": uom_prices[1]['name'],
