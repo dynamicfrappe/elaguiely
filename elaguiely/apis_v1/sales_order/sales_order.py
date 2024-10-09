@@ -3,6 +3,7 @@ from datetime import datetime
 
 import frappe
 from frappe import _
+from frappe.utils import today
 
 from elaguiely.apis_v1.jwt_decorator import jwt_required
 from elaguiely.apis_v1.utils import get_item_prices
@@ -24,7 +25,16 @@ def request_sales_order(**kwargs):
             frappe.local.response["message"] = _("Customer not found")
             frappe.local.response['http_status_code'] = 404
             return
+        # validate the maximum number of orders allowed
+        daily_orders = frappe.db.get_all("Sales Order", filters={'customer': customer_id, 'transaction_date': today()}, fields=['name'])
+        maximum_daily = frappe.get_value("Customer", customer, maximum_orders)
+        if len(daily_orders) >= maximum_daily:
+            frappe.local.response["message"] = _("Customer reached the maximum number of ordered allowed.")
+            frappe.local.response['http_status_code'] = 300
+            return
 
+        # Validate the minimum amount of the order
+        
         # Fetch the cart associated with this customer
         cart = frappe.get_doc("Cart", {'customer': customer.name}, fields=['*'])
         if not cart or not cart.get("cart_item"):  # Replace 'items' with the actual child table field
