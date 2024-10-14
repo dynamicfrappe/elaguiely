@@ -156,6 +156,13 @@ data = {
                 "insert_after" : "customer_group",
                 "label"        : _("Minimum Amount"),
                 "default" : 0.0
+            },
+            {  
+                "label" : "Maximum Number of Orders:",
+                "fieldname": "maximum_orders",
+                "fieldtype": "Int",
+                "insert_after": _("minimum_amount"),
+                "default" : 0
             }
         ],
         "Item Group" :[

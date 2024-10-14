@@ -27,7 +27,9 @@ def request_sales_order(**kwargs):
             return
         # validate the maximum number of orders allowed
         daily_orders = frappe.db.get_all("Sales Order", filters={'customer': customer_id, 'transaction_date': today()}, fields=['name'])
-        maximum_daily = frappe.get_value("Customer", customer, daily_orders)
+        default_maximum_daily = frappe.db.get_single_value("Selling Settings", 'maximum_orders')
+        special_maximum_daily = frappe.get_value("Customer", customer_id, 'maximum_orders')
+        maximum_daily = special_maximum_daily if special_maximum_daily else default_maximum_daily
         if len(daily_orders) >= maximum_daily:
             frappe.local.response["message"] = _("Customer reached the maximum number of ordered allowed.")
             frappe.local.response['http_status_code'] = 300
