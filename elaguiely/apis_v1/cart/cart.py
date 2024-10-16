@@ -28,10 +28,13 @@ def cart_details(**kwargs):
 			frappe.local.response["data"] = _("Cart not found")
 			return
 		products = []
+		default_max_orders = frappe.db.get_single_value("Selling Settings", 'maximum_orders' )
+		customer_max_orders = frappe.get_value("Customer", customer_id, "maximum_orders")
+		max_orders = customer_max_orders if customer_max_orders > 0 else default_max_orders
+		daily_orders = frappe.db.get_all("Sales Order", filters={'customer': customer_id, 'transaction_date': today()}, fields=['name'])
 		for item in cart.cart_item:
 			uom_prices = get_item_prices(item.item)
-			daily_orders = frappe.db.get_all("Sales Order", filters={'customer': customer_id, 'transaction_date': today()}, fields=['name'])
-			max_orders = frappe.get_value("Customer", customer_id, "maximum_orders")
+
 			qty = int(stock_qty(customer_id, item.get('item_name')) or 0)
 			product = {
 				"Id": item.get('item'),
@@ -126,10 +129,10 @@ def save_shopping_cart(**kwargs):
 			cart_doc = frappe.get_doc("Cart", cart_id)
 			cart = frappe.db.exists("Cart", {'name': cart_id})
 			product_data = cart_data.get("Product")
-			print(product_data)
-
-			default_warehouse = frappe.db.get_single_value('Stock Settings', 'default_warehouse')
-			actual_qty = frappe.get_value("Bin" , {"item_code":product_data.get("id") , "warehouse":default_warehouse} , 'actual_qty')
+			
+			# default_warehouse = frappe.db.get_single_value('Stock Settings', 'default_warehouse')
+			# actual_qty = frappe.get_value("Bin" , {"item_code":product_data.get("id") , "warehouse":default_warehouse} , 'actual_qty')
+			actual_qty = int(stock_qty(customer_id, product_data.get("id")) or 0 )
 			if product_data.get("totalquantity", 0) > actual_qty :
 					frappe.local.response['http_status_code'] = 400
 					frappe.local.response['message'] = _("No quantity avaliable for this item.")
@@ -143,7 +146,7 @@ def save_shopping_cart(**kwargs):
 
 			if existing_product:
 				cart_item = frappe.get_doc("Cart Item", existing_product)
-				print(cart_item.parent)
+				# print(cart_item.parent)
 
 				cart_item.qty = product_data.get("totalquantity", 0)
 

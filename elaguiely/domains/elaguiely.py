@@ -161,7 +161,7 @@ data = {
                 "label" : "Maximum Number of Orders:",
                 "fieldname": "maximum_orders",
                 "fieldtype": "Int",
-                "insert_after": _("minimum_amount"),
+                "insert_after": "minimum_amount",
                 "default" : 0
             }
         ],
