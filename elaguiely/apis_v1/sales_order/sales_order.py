@@ -3,9 +3,10 @@ from datetime import datetime
 
 import frappe
 from frappe import _
+from frappe.utils import today
 
 from elaguiely.apis_v1.jwt_decorator import jwt_required
-from elaguiely.apis_v1.utils import get_item_prices
+from elaguiely.apis_v1.utils import get_item_prices, stock_qty
 
 
 @frappe.whitelist(allow_guest=True)
@@ -24,7 +25,18 @@ def request_sales_order(**kwargs):
             frappe.local.response["message"] = _("Customer not found")
             frappe.local.response['http_status_code'] = 404
             return
+        # validate the maximum number of orders allowed
+        daily_orders = frappe.db.get_all("Sales Order", filters={'customer': customer_id, 'transaction_date': today()}, fields=['name'])
+        default_maximum_daily = frappe.db.get_single_value("Selling Settings", 'maximum_orders')
+        special_maximum_daily = frappe.get_value("Customer", customer_id, 'maximum_orders')
+        maximum_daily = special_maximum_daily if special_maximum_daily != 0 else default_maximum_daily
+        if len(daily_orders) >= maximum_daily:
+            frappe.local.response["message"] = _("Customer reached the maximum number of ordered allowed.")
+            frappe.local.response['http_status_code'] = 300
+            return
 
+        # Validate the minimum amount of the order
+        
         # Fetch the cart associated with this customer
         cart = frappe.get_doc("Cart", {'customer': customer.name}, fields=['*'])
         if not cart or not cart.get("cart_item"):  # Replace 'items' with the actual child table field
@@ -45,8 +57,23 @@ def request_sales_order(**kwargs):
         formatted_date = date_object.strftime("%Y-%m-%d")
         sales_order.delivery_date = formatted_date
 
+        total_amount = 0.0
         # Add cart items to the Sales Order items table
         for cart_item in cart.get("cart_item"):  # Replace 'items' with the correct field if different
+
+            # Validate Item Quantity
+            qty = int(stock_qty(customer_id, cart_item.item or 0 ))
+            max_qty = frappe.get_value("UOM Conversion Detail", filters={'parent': cart_item.item, 'uom': cart_item.uom}, fieldname='maximum_qty')
+            print(qty)
+            print(max_qty)
+            if not(int(cart_item.qty) <= qty and int(cart_item.qty) <= max_qty):
+                frappe.local.response["message"] = _(f"Quantity required is higher than stock quantity or the allowed quantity for item: {cart_item.item}")
+                frappe.local.response['http_status_code'] = 404
+                return
+
+            # Calculate the total amount
+            total_amount += (float(cart_item.qty) * float(cart_item.rate))
+
             uom_prices = get_item_prices(cart_item.item)  # Assuming you get the UOM prices this way
             sales_order.append("items", {
                 "item_code": cart_item.item,  # Ensure this field matches the actual one in your Cart item table
@@ -57,6 +84,11 @@ def request_sales_order(**kwargs):
                 "stock_uom": uom_prices[0].get('name') if uom_prices else cart_item.uom,
                 "description": cart_item.get('description') or cart_item.get('item_name')
             })
+        minimum_amount = frappe.db.get_single_value("Selling Settings", 'minimum_amount')
+        if total_amount < minimum_amount:
+            frappe.local.response["message"] = _(f"Total amount of the order should be more than the minimum amount.")
+            frappe.local.response['http_status_code'] = 404
+            return
             # print('sales_order ==> ', sales_order)
         sales_order.insert(ignore_permissions=True)
         # sales_order.submit()  # Submitting the order (optional, depending on your workflow)

@@ -1,7 +1,7 @@
 import frappe
 import json
 from frappe import _
-
+from frappe.utils import today
 from elaguiely.apis_v1.jwt_decorator import jwt_required
 from elaguiely.apis_v1.utils import get_item_prices, stock_qty
 
@@ -28,9 +28,15 @@ def cart_details(**kwargs):
 			frappe.local.response["data"] = _("Cart not found")
 			return
 		products = []
+		default_max_orders = frappe.db.get_single_value("Selling Settings", 'maximum_orders' )
+		customer_max_orders = frappe.get_value("Customer", customer_id, "maximum_orders")
+		max_orders = customer_max_orders if customer_max_orders > 0 else default_max_orders
+		daily_orders = frappe.db.get_all("Sales Order", filters={'customer': customer_id, 'transaction_date': today()}, fields=['name'])
 		for item in cart.cart_item:
 			uom_prices = get_item_prices(item.item)
-			qty = int(stock_qty(customer_id, item.get('item_name')) or 0)
+
+			qty = int(stock_qty(customer_id, item.get('item')) or 0)
+			print(qty)
 			product = {
 				"Id": item.get('item'),
 				"PreviewImage": item.get('image'),
@@ -44,6 +50,7 @@ def cart_details(**kwargs):
 				"Unit1Point": 1.00,
 				"Unit1Factor": uom_prices[0]['factor'],
 				"actual_qty1": int(qty / uom_prices[0]['factor']) if uom_prices[0]['factor'] not in [0, None] else 0,
+				"maximum_qty1": uom_prices[0]['max_qty'],
 				"Unit2Name": uom_prices[1]['name'],
 				"Unit2NameEng": uom_prices[1]['name'],
 				"U_Code2": uom_prices[1]['name'],
@@ -52,6 +59,7 @@ def cart_details(**kwargs):
 				"Unit2Point": 1.00,
 				"Unit2Factor": uom_prices[1]['factor'],
 				"actual_qty2": int(qty / uom_prices[1]['factor']) if uom_prices[1]['factor'] not in [0, None] else 0,
+				"maximum_qty2": uom_prices[1]['max_qty'],
 				"Unit3Name": uom_prices[2]['name'],
 				"Unit3NameEng": uom_prices[2]['name'],
 				"U_Code3": uom_prices[2]['name'],
@@ -60,6 +68,7 @@ def cart_details(**kwargs):
 				"Unit3Point": 1.00,
 				"Unit3Factor": uom_prices[2]['factor'],
 				"actual_qty3": int(qty / uom_prices[2]['factor']) if uom_prices[2]['factor'] not in [0, None] else 0,
+				"maximum_qty3": uom_prices[2]['max_qty'],
 				"SummaryEng": "None",
 				"DescriptionEng": "None",
 				"Summary": "None",
@@ -91,6 +100,9 @@ def cart_details(**kwargs):
 		frappe.local.response['http_status_code'] = 200
 		response_data = {
 			"isPriceChanged": False,  # You may want to add logic to calculate this
+			"minimum_amount": frappe.db.get_single_value("Selling Settings", 'minimum_amount'),
+			"max_orders": max_orders,
+			"allow_order": len(daily_orders) < max_orders,
 			"productlist": products,
 		}
 		frappe.local.response["data"] = response_data
@@ -118,10 +130,10 @@ def save_shopping_cart(**kwargs):
 			cart_doc = frappe.get_doc("Cart", cart_id)
 			cart = frappe.db.exists("Cart", {'name': cart_id})
 			product_data = cart_data.get("Product")
-			print(product_data)
-
-			default_warehouse = frappe.db.get_single_value('Stock Settings', 'default_warehouse')
-			actual_qty = frappe.get_value("Bin" , {"item_code":product_data.get("id") , "warehouse":default_warehouse} , 'actual_qty')
+			
+			# default_warehouse = frappe.db.get_single_value('Stock Settings', 'default_warehouse')
+			# actual_qty = frappe.get_value("Bin" , {"item_code":product_data.get("id") , "warehouse":default_warehouse} , 'actual_qty')
+			actual_qty = int(stock_qty(customer_id, product_data.get("id")) or 0 )
 			if product_data.get("totalquantity", 0) > actual_qty :
 					frappe.local.response['http_status_code'] = 400
 					frappe.local.response['message'] = _("No quantity avaliable for this item.")
@@ -135,7 +147,7 @@ def save_shopping_cart(**kwargs):
 
 			if existing_product:
 				cart_item = frappe.get_doc("Cart Item", existing_product)
-				print(cart_item.parent)
+				# print(cart_item.parent)
 
 				cart_item.qty = product_data.get("totalquantity", 0)
 
@@ -166,7 +178,9 @@ def save_shopping_cart(**kwargs):
 			return "Cart Not Exists"
 
 	except Exception as e:
-		print(f"An error occurred: {e}")
+		frappe.local.response['http_status_code'] = 404
+		frappe.local.response['message'] = _("failed to save the cart: {0}").format(str(e))
+		frappe.local.response['data'] = {"errors": str(e)}
 		frappe.db.rollback()
 
 
