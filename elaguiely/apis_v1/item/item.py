@@ -83,6 +83,10 @@ def get_items_prices(**kwargs):
                 # Total Quantity available in stock_uom
                 qty = int(stock_qty(customer_name, item['name']) or 0 )
                 # Structure the item details with multiple UOMs
+                actual_qty1 = int(qty / uom_prices[0]['factor']) if uom_prices[0]['factor'] not in [0, None] else 0
+                actual_qty2 = int(qty / uom_prices[1]['factor']) if uom_prices[1]['factor'] not in [0, None] else 0
+                actual_qty3 = int(qty / uom_prices[2]['factor']) if uom_prices[2]['factor'] not in [0, None] else 0
+
                 item_details = {
                     "Id": item['name'],
                     "PreviewImage": item.get('image', ''),
@@ -94,24 +98,24 @@ def get_items_prices(**kwargs):
                     "Unit1OrignalPrice": uom_prices[0]['price'],
                     "Unit1Price": uom_prices[0]['price'],
                     "Unit1Factor": uom_prices[0]['factor'],
-                    "actual_qty1": int(qty / uom_prices[0]['factor']) if uom_prices[0]['factor'] not in [0, None] else 0,
-                    "maximum_qty1": uom_prices[0]['max_qty'],
+                    "actual_qty1": actual_qty1,
+                    "maximum_qty1": uom_prices[0]['max_qty'] if uom_prices[0]['max_qty'] else actual_qty1,
                     "U_Code2": uom_prices[1]['name'],
                     "Unit2Name": uom_prices[1]['name'],
                     "Unit2NameEng": uom_prices[1]['name'],
                     "Unit2OrignalPrice": uom_prices[1]['price'],
                     "Unit2Price": uom_prices[1]['price'],
                     "Unit2Factor": uom_prices[1]['factor'],
-                    "actual_qty2": int(qty / uom_prices[1]['factor']) if uom_prices[1]['factor'] not in [0, None] else 0,
-                    "maximum_qty2": uom_prices[1]['max_qty'],
+                    "actual_qty2": actual_qty2,
+                    "maximum_qty2": uom_prices[1]['max_qty'] if uom_prices[1]['max_qty'] else actual_qty2,
                     "U_Code3": uom_prices[2]['name'],
                     "Unit3Name": uom_prices[2]['name'],
                     "Unit3NameEng": uom_prices[2]['name'],
                     "Unit3OrignalPrice": uom_prices[2]['price'],
                     "Unit3Price": uom_prices[2]['price'],
                     "Unit3Factor": uom_prices[2]['factor'],
-                    "actual_qty3": int(qty / uom_prices[2]['factor']) if uom_prices[2]['factor'] not in [0, None] else 0,
-                    "maximum_qty3": uom_prices[2]['max_qty'],
+                    "actual_qty3": actual_qty3,
+                    "maximum_qty3": uom_prices[2]['max_qty'] if uom_prices[2]['max_qty'] else actual_qty3,
                     "SummaryEng": None,
                     "DescriptionEng": None,
                     "Summary": None,
