@@ -130,6 +130,12 @@ data = {
                "label" : _("Arabic Name"),
                "reqd" : 1 ,
             },
+			{
+				"fieldname" : "hide_from_app",
+				"fieldtype" : "Check",
+				"insert_after" : "arabic_name",
+				"label" : _("Hide From App"),
+			},
             {
                 "fieldname" : "sub_catgories",
                 "fieldtype" : "Table",

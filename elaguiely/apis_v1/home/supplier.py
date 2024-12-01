@@ -10,6 +10,7 @@ def get_all_suppliers(**kwargs):
 	try:
 		suppliers = frappe.db.get_list(
 			"Brand",
+			filters = {'hide_from_app' : 0},
 			fields=["name", "arabic_name", "image"],
 			ignore_permissions=True
 		)
