@@ -16,7 +16,7 @@ def get_best_selling_items(**kwargs):
 	items_with_uom_and_prices = []
 
 	for ig in item_groups:
-		ig_items = frappe.db.get_all("Item", filters={'item_group' : ig.get("parent"), 'best_sell': 1}, fields=['name'])
+		ig_items = frappe.db.get_all("Item", filters={'item_group' : ig.get("parent"), 'disabled':0, 'best_sell': 1}, fields=['name'])
 		items.extend(ig_items)  
 	item_names = [item['name'] for item in items]
 

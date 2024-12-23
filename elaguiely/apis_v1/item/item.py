@@ -40,7 +40,7 @@ def get_items_prices(**kwargs):
     fav_items = [item['item'] for item in fav_items]
 
     filters = {}
-    
+    filters['disabled'] = 0
     if item_group:
         filters['item_group'] = item_group
     if brand:
@@ -172,7 +172,7 @@ def get_items_search(**kwargs):
         frappe.local.response['http_status_code'] = 404
         return
 
-    items = frappe.get_all('Item', fields=['name', 'item_name'], ignore_permissions=True )
+    items = frappe.get_all('Item',filters={'disabled': 0}, fields=['name', 'item_name'], ignore_permissions=True )
     response = []
     for item in items:
         # Check if there is a price exists for that item before listing it
