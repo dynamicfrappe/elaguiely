@@ -233,6 +233,22 @@ data = {
             },
 
         ],
+        "Selling Settings" :[
+            {
+                "fieldname"    : "validate_selling_price_with_role",
+                "fieldtype"    : "Check",
+                "insert_after" : "editable_bundle_item_rates",
+                "label"        : _("Validate Selling Price With Role"),
+            },
+            {
+                "fieldname"    : "roles",
+                "fieldtype"    : "Table",
+                "insert_after" : "validate_selling_price_with_role",
+                "label"        : _("Role"),
+                "options" : "Roles Validation Selling",
+            }
+
+        ],
         "UOM Conversion Detail" : [
             {
                 "fieldname"    : "maximum_qty",

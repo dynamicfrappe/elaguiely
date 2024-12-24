@@ -118,6 +118,11 @@ doc_events = {
             "elaguiely.apis.sales_order.date_of_submit",
             ],
 	},
+    "Sales Invoice": {
+		"validate": [
+			"elaguiely.controllers.sales_invoice.validate",
+			],
+	},
 	"Customer": {
 		"on_update": [
             "elaguiely.elaguiely.functions.create_cart_after_enable_customer",
