@@ -223,6 +223,16 @@ data = {
             },
 
         ],
+        "Sales Invoice" :[
+            {
+                "fieldname"    : "closing_balance",
+                "fieldtype"    : "Float",
+                "insert_after" : "customer",
+                "label"        : _("Closing Balance"),
+                "read_only": 1,
+            },
+
+        ],
         "UOM Conversion Detail" : [
             {
                 "fieldname"    : "maximum_qty",

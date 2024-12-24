@@ -32,7 +32,8 @@ app_license = "MIT"
 
 # include js in doctype views
 doctype_js = {
-	"Customer" : "public/js/customer.js"
+	"Customer" : "public/js/customer.js",
+    "Sales Invoice" : "public/js/sales_invoice.js",
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -52,6 +53,16 @@ doctype_js = {
 # Generators
 # ----------
 
+
+
+
+
+jenv = {
+    "methods": [
+        "get_closing_balance_for_customer:elaguiely.apis.utils.get_closing_balance_for_customer",
+    ],
+    "filters": [],
+}
 # automatically create page for each record of this doctype
 # website_generators = ["Web Page"]
 

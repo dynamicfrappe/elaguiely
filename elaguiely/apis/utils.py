@@ -3,7 +3,6 @@ import frappe
 from frappe import _
 from frappe.utils import today
 import time 
-from elaguiely.elaguiely.functions import create_favorite 
 
 def memoize(func):
     cache = {}
@@ -22,6 +21,30 @@ def get_customer_default_price_list(cutomer) :
    customer : string customer name 
    return price list from customer default 
    """
+
+
+from erpnext.accounts.report.customer_ledger_summary.customer_ledger_summary import execute
+
+@frappe.whitelist()
+def get_closing_balance_for_customer(customer):
+	company = frappe.defaults.get_user_default("Company")
+	from_date = frappe.defaults.get_user_default("fiscal_year_start_date")
+	to_date = frappe.utils.today()
+	party = customer
+	customer_name = frappe.get_value("Customer", customer, "customer_name")
+	filters = {
+		"from_date": from_date,
+		"to_date": to_date,
+		"company": company,
+		"party_type": "Customer",
+		"party": party,
+		"party_name": customer_name
+	}
+	data = execute(filters)
+	if data and data[1] and data[1][0]:
+		return data[1][0].get("closing_balance")
+	else:
+		return 0
 
 
 def get_customer_price_list():
