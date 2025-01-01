@@ -32,7 +32,7 @@ def get_categories(ParentId=None, classcode=None, **kwargs):
 		else:
 			subcategories = frappe.db.get_list("Brand Categories", fields=['parent'], filters=[{'category': ParentId}])
 			for subcategory in subcategories:
-				suppliers = frappe.db.get_list("Brand", filters={'name': subcategory.get("parent")},
+				suppliers = frappe.db.get_list("Brand", filters={'name': subcategory.get("parent"), 'hide_from_app' : 0},
 											   fields={'name', 'arabic_name', 'image'})
 				for supplier in suppliers:
 					image = frappe.db.get_value('Brand', supplier.get('name'), "image")
