@@ -23,7 +23,7 @@ def get_items_prices(**kwargs):
     
     # Fetch customer and cart in one go
     customer_name = frappe.get_value("Customer", customer_id, "name")
-    price_list_name = frappe.get_value("Customer", customer_id, "default_price_list") or ""
+    price_list_name = frappe.get_value("Customer", customer_id, "default_price_list") or frappe.db.get_single_value("Selling Settings", "default_price_list")
     cart_items = frappe.get_all(
         "Cart Item",
         filters={'parent': frappe.get_value("Cart", {"customer": customer_name}, "name")},
@@ -64,7 +64,7 @@ def get_items_prices(**kwargs):
     # Fetch item prices for all items at once
     item_names = [item['name'] for item in items]
     # Fetch prices for all items in one query
-    item_prices = get_bulk_item_prices(item_names)  
+    item_prices = get_bulk_item_prices(item_names, price_list_name)  
 
     for item in items:
         # Fetch favorite field

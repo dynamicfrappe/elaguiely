@@ -19,10 +19,10 @@ def get_best_selling_items(**kwargs):
 		ig_items = frappe.db.get_all("Item", filters={'item_group' : ig.get("parent"), 'disabled':0, 'best_sell': 1}, fields=['name'])
 		items.extend(ig_items)  
 	item_names = [item['name'] for item in items]
+	
+	price_list_name = frappe.get_value("Customer", customer, "default_price_list") or frappe.db.get_single_value("Selling Settings", "default_price_list")
 
-	item_prices = get_bulk_item_prices(item_names)
-	price_list_name = frappe.get_value("Customer", customer, "default_price_list") or ""
-
+	item_prices = get_bulk_item_prices(item_names, price_list_name)
 	# Fetch favorite items
 	fav_items = frappe.get_list("Favorite Item", 
 		filters={'parent': frappe.get_value("Favorite", {'customer': customer}, 'name')}, 

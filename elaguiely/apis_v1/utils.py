@@ -7,12 +7,12 @@ from dynamic.controllers.sales_order import get_all_qty_reserved
 
 domains = frappe.get_active_domains()
 
-def get_item_prices(item_name):
+def get_item_prices(item_name, price_list_name=None):
 	# Fetch all prices for the given item
 	prices = frappe.db.get_list(
 		'Item Price',
 		fields=['uom', 'price_list_rate', 'price_list'],
-		filters={'item_code': item_name},
+		filters={'item_code': item_name, 'price_list': price_list_name},
 		ignore_permissions=True
 	)
 
@@ -33,12 +33,12 @@ def get_item_prices(item_name):
 	return uom_prices
 
 
-def get_bulk_item_prices(item_names):
+def get_bulk_item_prices(item_names, price_list_name=None):
 	# Fetch all prices for the given list of items in a single query
 	prices = frappe.db.get_all(
 		'Item Price',
 		fields=['item_code', 'uom', 'price_list_rate', 'price_list'],
-		filters={'item_code': ['in', item_names]},
+		filters={'item_code': ['in', item_names], 'price_list': price_list_name},
 		ignore_permissions=True
 	)
 

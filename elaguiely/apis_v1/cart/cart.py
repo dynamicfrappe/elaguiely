@@ -32,8 +32,9 @@ def cart_details(**kwargs):
 		customer_max_orders = frappe.get_value("Customer", customer_id, "maximum_orders")
 		max_orders = customer_max_orders if customer_max_orders > 0 else default_max_orders
 		daily_orders = frappe.db.get_all("Sales Order", filters={'customer': customer_id, 'transaction_date': today()}, fields=['name'])
+		price_list_name = frappe.get_value("Customer", customer_id, "default_price_list") or frappe.db.get_single_value("Selling Settings", "default_price_list")
 		for item in cart.cart_item:
-			uom_prices = get_item_prices(item.item)
+			uom_prices = get_item_prices(item.item, price_list_name)
 
 			qty = int(stock_qty(customer_id, item.get('item')) or 0)
 			print(qty)

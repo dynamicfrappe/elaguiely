@@ -72,8 +72,9 @@ def request_sales_order(**kwargs):
 
             # Calculate the total amount
             total_amount += (float(cart_item.qty) * float(cart_item.rate))
+            price_list_name = frappe.get_value("Customer", customer_id, "default_price_list") or frappe.db.get_single_value("Selling Settings", "default_price_list")
 
-            uom_prices = get_item_prices(cart_item.item)  # Assuming you get the UOM prices this way
+            uom_prices = get_item_prices(cart_item.item , price_list_name)  # Assuming you get the UOM prices this way
             sales_order.append("items", {
                 "item_code": cart_item.item,  # Ensure this field matches the actual one in your Cart item table
                 "qty": cart_item.qty,
