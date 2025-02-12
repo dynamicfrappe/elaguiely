@@ -1,8 +1,8 @@
 import frappe
 from frappe import _
 
-DOMAINS = frappe.get_active_domains()
 
+DOMAINS = frappe.get_active_domains()
 
 
 @frappe.whitelist()
@@ -10,14 +10,20 @@ def validate(self ,event):
     if 'Elaguiely' in DOMAINS:
         validate_seeling_price_with_role(self)
 
+def get_user_roles(user):
+    roles = frappe.get_all('Has Role', filters={'parent': user}, fields=['role'])
+    role_names = [role['role'] for role in roles]
+    return role_names
+
+
+
 def validate_seeling_price_with_role(self):
     validate_selling_price_with_role = frappe.db.get_single_value("Selling Settings", "validate_selling_price_with_role")
     if validate_selling_price_with_role == 1:
-        
         roles = frappe.get_list("Roles Validation Selling",{"parent": "Selling Settings"}, pluck="role")
-        user_roles = frappe.get_roles()
-        
+        user = frappe.session.user        
         items = self.get('items')
+        user_roles = get_user_roles(user)
         if self.selling_price_list:
             for item in items:
                 if item.rate < float(get_purchase_rate(item.item_code) or 0):
