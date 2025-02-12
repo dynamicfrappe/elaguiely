@@ -33,6 +33,7 @@ def validate_seeling_price_with_role(self):
 
 
 
+
 def get_purchase_rate(item_code):
     purchase_rate = frappe.db.get_value("Item", item_code, "last_purchase_rate")
     return purchase_rate
