@@ -261,6 +261,22 @@ data = {
 
     "properties": [
         {
+        "doctype": "Sales Order Item",
+        "doctype_or_field": "DocField",
+        "fieldname": "price_list_rate",
+        "property": "read_only",
+        "property_type": "currency",
+        "value": "1"
+        },
+        {
+        "doctype": "Sales Invoice Item",
+        "doctype_or_field": "DocField",
+        "fieldname": "price_list_rate",
+        "property": "read_only",
+        "property_type": "currency",
+        "value": "1"
+        },
+        {
             "doctype":"Address",
             "doctype_or_field":"DocField",
             "fieldname":"city",
