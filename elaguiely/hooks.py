@@ -34,6 +34,7 @@ app_license = "MIT"
 doctype_js = {
 	"Customer" : "public/js/customer.js",
     "Sales Invoice" : "public/js/sales_invoice.js",
+    "Sales Order" : "public/js/sales_order.js"
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -116,7 +117,8 @@ doc_events = {
 		"validate": [
             "elaguiely.apis.sales_order.on_change",
             "elaguiely.apis.sales_order.date_of_submit",
-            ],
+            "elaguiely.apis.sales_order.validate"
+            ], 
 	},
     "Sales Invoice": {
 		"validate": [

@@ -27,3 +27,16 @@ frappe.ui.form.on('Sales Invoice', {
         }
     }
 })
+frappe.ui.form.on('Sales Invoice Item' , {
+
+    refressh:function(frm){
+
+        window.onload = function() {
+            if (localStorage.getItem("isReadOnly") === "true") {
+              document.getElementById("price_list_rate").readOnly = true;
+            }
+        };
+        
+    },
+
+})
