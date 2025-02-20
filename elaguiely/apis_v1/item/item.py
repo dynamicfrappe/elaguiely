@@ -235,3 +235,38 @@ def save_favorite_item(**kwargs):
         return
 
 
+# Testing DONE
+@frappe.whitelist(allow_guest=False)
+# @jwt_required
+def get__alternative_items(**kwargs):
+    # customer = frappe.local.user.customer
+    customer = frappe.get_value("User",frappe.session.user,'customer')
+    item_code = kwargs.get("itemcode")
+    if not customer:
+        frappe.local.response["message"] = _("CustomerID is required")
+        frappe.local.response['http_status_code'] = 400
+        return
+
+    # Fetch the default price list for the customer
+    price_list_name = frappe.get_value("Customer", customer, "default_price_list")
+    if not price_list_name:
+        frappe.local.response["message"] = _("Default price list not set for the customer.")
+        frappe.local.response['http_status_code'] = 404
+        return
+
+    items = frappe.get_all('Item Alternative',{"item_code": item_code}, ['name', 'item_name'], ignore_permissions=True )
+    # return items
+    response = []
+    for item in items:
+        # Check if there is a price exists for that item before listing it
+        # item_enabled = frappe.db.exists("Item Price", {"item_code": item['name'], "price_list": price_list_name})
+        if frappe.db.exists("Item Price", {"item_code": item['name'], "price_list": price_list_name}): 
+            response.append(item.item_name)
+
+    if not response:
+        frappe.local.response['http_status_code']=404
+        frappe.local.response["data"] = response
+        return
+
+
+    frappe.local.response["data"] = response
