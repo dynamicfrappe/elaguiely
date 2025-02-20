@@ -236,11 +236,11 @@ def save_favorite_item(**kwargs):
 
 
 # Testing DONE
-@frappe.whitelist(allow_guest=False)
-# @jwt_required
+@frappe.whitelist(allow_guest=True)
+@jwt_required
 def get__alternative_items(**kwargs):
-    # customer = frappe.local.user.customer
-    customer = frappe.get_value("User",frappe.session.user,'customer')
+    customer = frappe.local.user.customer
+    # customer = frappe.get_value("User",frappe.session.user,'customer')
     item_code = kwargs.get("itemcode")
     if not customer:
         frappe.local.response["message"] = _("CustomerID is required")
