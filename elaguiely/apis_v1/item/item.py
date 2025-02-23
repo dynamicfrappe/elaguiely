@@ -15,6 +15,8 @@ def get_items_prices(**kwargs):
     customer_id = kwargs.get("CustomerID")
     item_name = kwargs.get("ItemName")
     is_fav = kwargs.get("fav")
+
+    alternativeitem = kwargs.get("alternativeitem")#noha
     
     if not customer_id:
         frappe.local.response["message"] = _("CustomerID is required")
@@ -39,6 +41,14 @@ def get_items_prices(**kwargs):
         fields=['item']) if frappe.get_value("Favorite", {'customer': customer_id}, 'name') else []
     fav_items = [item['item'] for item in fav_items]
 
+    # Fetch alternative items
+    alternative_items = frappe.get_list("Item Alternative", 
+        filters={'item_code': alternativeitem}, 
+        fields=['alternative_item_code'],ignore_permissions=True ) #if frappe.get_value("Favorite", {'customer': customer_id}, 'name') else []
+    #return alternative_items;
+    alternative_items = [item['alternative_item_code'] for item in alternative_items]
+    #return alternative_items;
+
     filters = {}
     filters['disabled'] = 0
     if item_group:
@@ -49,6 +59,8 @@ def get_items_prices(**kwargs):
         filters['item_name'] = item_name
     if is_fav:
         filters['name'] = ['in', fav_items]
+    if alternativeitem:
+        filters['name'] = ['in', alternative_items]
 
     # Fetch all items in one query
     items = frappe.db.get_all(
