@@ -9,6 +9,7 @@ DOMAINS = frappe.get_active_domains()
 def validate(self ,event):
     if 'Elaguiely' in DOMAINS:
         validate_seeling_price_with_role(self)
+        valid_max_qty(self)
 
 def get_user_roles(user):
     roles = frappe.get_all('Has Role', filters={'parent': user}, fields=['role'])
@@ -42,3 +43,11 @@ def get_price_list_rate(item_code):
     else:
         return None  
 
+def valid_max_qty(self):#noha
+             items = self.get('items')
+             for cart_item in items: 
+                   # Validate Item Quantity
+                    max_qty = frappe.get_value("UOM Conversion Detail", filters={'parent': cart_item.item_code, 'uom': cart_item.uom}, fieldname='maximum_qty')
+                    if int(cart_item.qty) >= max_qty  &  max_qty>0:
+                        frappe.throw(_(f"Quantity required is higher than  allowed quantity for item: {cart_item.item_code} max quantity can order is {max_qty}"))
+                        

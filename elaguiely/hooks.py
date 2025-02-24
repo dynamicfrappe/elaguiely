@@ -117,7 +117,8 @@ doc_events = {
 		"validate": [
             "elaguiely.apis.sales_order.on_change",
             "elaguiely.apis.sales_order.date_of_submit",
-            "elaguiely.apis.sales_order.validate"
+            "elaguiely.apis.sales_order.validate",
+            "elaguiely.controllers.sales_order.validate",
             ], 
 	},
     "Sales Invoice": {
