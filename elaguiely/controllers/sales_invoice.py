@@ -47,7 +47,7 @@ def valid_max_qty(self):#noha
              items = self.get('items')
              for cart_item in items: 
                    # Validate Item Quantity
-                    max_qty = frappe.get_value("UOM Conversion Detail", filters={'parent': cart_item.item_code, 'uom': cart_item.uom}, fieldname='maximum_qty')
+                    max_qty = int(frappe.get_value("UOM Conversion Detail", filters={'parent': cart_item.item_code, 'uom': cart_item.uom}, fieldname='maximum_qty') or 0)
                     if int(cart_item.qty) >= max_qty  &  max_qty>0:
                         frappe.throw(_(f"Quantity required is higher than  allowed quantity for item: {cart_item.item_code} max quantity can order is {max_qty}"))
                         

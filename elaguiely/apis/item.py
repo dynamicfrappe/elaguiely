@@ -10,7 +10,7 @@ from elaguiely.apis.api import get_url
 
 """
 response data  {
-   "sid" : item code , done
+   "sid" : item code , donef
    "name" : item name , done
    "item_group" : group ,done
    "barnd" : brand ,done

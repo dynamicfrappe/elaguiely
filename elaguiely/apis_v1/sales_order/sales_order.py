@@ -63,7 +63,7 @@ def request_sales_order(**kwargs):
 
             # Validate Item Quantity
             qty = int(stock_qty(customer_id, cart_item.item or 0 ))
-            max_qty = frappe.get_value("UOM Conversion Detail", filters={'parent': cart_item.item, 'uom': cart_item.uom}, fieldname='maximum_qty')
+            max_qty = int(frappe.get_value("UOM Conversion Detail", filters={'parent': cart_item.item, 'uom': cart_item.uom}, fieldname='maximum_qty') or 0)
             max_qty = qty if max_qty == 0 else max_qty
             if not(int(cart_item.qty) <= qty and int(cart_item.qty) <= max_qty):
                 frappe.local.response["message"] = _(f"Quantity required is higher than stock quantity or the allowed quantity for item: {cart_item.item}")

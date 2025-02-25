@@ -135,12 +135,23 @@ def save_shopping_cart(**kwargs):
 			# default_warehouse = frappe.db.get_single_value('Stock Settings', 'default_warehouse')
 			# actual_qty = frappe.get_value("Bin" , {"item_code":product_data.get("id") , "warehouse":default_warehouse} , 'actual_qty')
 			actual_qty = int(stock_qty(customer_id, product_data.get("id")) or 0 )
-			if product_data.get("totalquantity", 0) > actual_qty :
+			print('save_shopping_cart2')
+			
+			#noha to test card maxqtyreq
+			max_qty = int(frappe.get_value("UOM Conversion Detail", filters={'parent': product_data.get("id"), 'uom': product_data.get("sellUnit")}, fieldname='maximum_qty') or 0)
+		  
+			print('save_shopping_cart3')
+			print(product_data)
+			print(max_qty)
+			if product_data.get("totalquantity", 0) > actual_qty  :
 					frappe.local.response['http_status_code'] = 400
 					frappe.local.response['message'] = _("No quantity avaliable for this item.")
 					return "No quantity avaliable for this item."
+			elif product_data.get("totalquantity", 0) > max_qty & max_qty > 0 :#noha
+					frappe.local.response['http_status_code'] = 400
+					frappe.local.response['message'] = _("لقد تخطيت الحد الاقصى المسموح به.")
+					return "لقد تخطيت الحد الاقصى المسموح به.."
 			
-
 			existing_product = frappe.db.exists("Cart Item", {
 				"item": product_data.get("id"),
 				"parent": cart_doc.name

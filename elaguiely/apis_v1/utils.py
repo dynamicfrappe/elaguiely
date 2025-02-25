@@ -22,7 +22,7 @@ def get_item_prices(item_name, price_list_name=None):
 	# Populate UOM data into respective slots (up to 3 UOMs)
 	for idx, price in enumerate(prices[:3]):
 		factor = frappe.get_value("UOM Conversion Detail", filters={'parent': item_name, 'uom': price['uom']}, fieldname='conversion_factor')
-		max_qty = frappe.get_value("UOM Conversion Detail", filters={'parent': item_name, 'uom': price['uom']}, fieldname='maximum_qty')
+		max_qty = int(frappe.get_value("UOM Conversion Detail", filters={'parent': item_name, 'uom': price['uom']}, fieldname='maximum_qty') or 0)
 		uom_prices[idx] = {
 			'name': price['uom'],
 			'price': price['price_list_rate'],
