@@ -17,8 +17,8 @@ def get_customer_class():
             
     except Exception as e:
         frappe.local.response['http_status_code'] = 500
-        frappe.local.response['message'] = _("failed to get customer classes: {0}").format(str(e))
-        frappe.local.response['data'] = {"errors": str(e)}
+        frappe.local.response['message'] = _("خظأ فى تصنيف العميل: {0}").format(str(e))
+        frappe.local.response['data'] = {"خظأ": str(e)}
 
 
 @frappe.whitelist(allow_guest = True)

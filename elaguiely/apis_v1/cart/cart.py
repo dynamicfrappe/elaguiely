@@ -13,14 +13,14 @@ def cart_details(**kwargs):
 		# Extract CustomerID from the request parameters
 		customer_id = kwargs.get("CustomerID")
 		if not customer_id:
-			frappe.local.response["message"] = _("CustomerID is required")
+			frappe.local.response["message"] = _("يجب اختيار عميل")
 			frappe.local.response['http_status_code'] = 400
 			return
 
 		# Fetch the customer document
 		customer = frappe.get_doc("Customer", customer_id)
 		if not customer:
-			frappe.local.response["message"] = _("Customer not found")
+			frappe.local.response["message"] = _("لا يوجد عميل بهذا الاسم")
 			frappe.local.response['http_status_code'] = 404
 			return
 		cart = frappe.get_doc("Cart", {'customer': customer.name}, fields=['*'])
@@ -145,8 +145,8 @@ def save_shopping_cart(**kwargs):
 			print(max_qty)
 			if product_data.get("totalquantity", 0) > actual_qty  :
 					frappe.local.response['http_status_code'] = 400
-					frappe.local.response['message'] = _("No quantity avaliable for this item.")
-					return "No quantity avaliable for this item."
+					frappe.local.response['message'] = _("لا توجد كمية متاحة لهذا البند.")
+					return "لا توجد كمية متاحة لهذا البند."
 			elif product_data.get("totalquantity", 0) > max_qty & max_qty > 0 :#noha
 					frappe.local.response['http_status_code'] = 400
 					frappe.local.response['message'] = _("لقد تخطيت الحد الاقصى المسموح به.")
@@ -191,7 +191,7 @@ def save_shopping_cart(**kwargs):
 
 	except Exception as e:
 		frappe.local.response['http_status_code'] = 404
-		frappe.local.response['message'] = _("failed to save the cart: {0}").format(str(e))
+		frappe.local.response['message'] = _("فشل في حفظ العربة: {0}").format(str(e))
 		frappe.local.response['data'] = {"errors": str(e)}
 		frappe.db.rollback()
 

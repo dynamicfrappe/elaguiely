@@ -19,7 +19,7 @@ def login(UserName=None, Password=None, OneSignalUserID=None, deviceKey=None):
 	# Check if the mobile or password is missing
 	if not UserName or not Password:
 		frappe.local.response["http_status_code"] = 400
-		frappe.local.response["message"] = _('Mobile number and password are required')
+		frappe.local.response["message"] = _('مطلوب رقم الهاتف وكلمة المرور')
 		return
 
 	# Fetch the user by mobile number
@@ -28,13 +28,13 @@ def login(UserName=None, Password=None, OneSignalUserID=None, deviceKey=None):
 	# Check if the user exists
 	if not user:
 		frappe.local.response["http_status_code"] = 404
-		frappe.local.response["message"] = _('User not found')
+		frappe.local.response["message"] = _('لم يتم العثور على المستخدم')
 		return
 
 	# Check if the user is enabled
 	if not user.enabled:
 		frappe.local.response["http_status_code"] = 403
-		frappe.local.response["message"] = _('User account is disabled')
+		frappe.local.response["message"] = _('تم تعطيل حساب المستخدم')
 		return
 
 	# Check the password using Frappe's authentication mechanism
@@ -45,7 +45,7 @@ def login(UserName=None, Password=None, OneSignalUserID=None, deviceKey=None):
 		frappe.local.login_manager.post_login()
 	except frappe.AuthenticationError:
 		frappe.local.response["http_status_code"] = 401
-		frappe.local.response["message"] = _('Invalid password')
+		frappe.local.response["message"] = _('كلمة المرور غير صالحة')
 		return
 
 	# Generate JWT token for the user
@@ -168,27 +168,27 @@ def register(**kwargs):
 			return
 		else:
 			frappe.local.response['http_status_code'] = 400
-			frappe.local.response['message'] = _("Phone number or email are required")
+			frappe.local.response['message'] = _("يجب ادخال البريد الاليكترونى او رقم الهاتف")
 		return
 
 	# Check if a user with the provided phone and email already exists
 	if frappe.db.exists("User", {"username": name}):
 		frappe.local.response['http_status_code'] = 400
-		frappe.local.response['message'] = _("User with the provided store name already exists")
+		frappe.local.response['message'] = _("المستخدم الذي يحمل اسم المتجر المقدم موجود بالفعل")
 		return
 	elif frappe.db.exists("User", {"email": email}):
 		frappe.local.response['http_status_code'] = 400
-		frappe.local.response['message'] = _("User with the provided email already exists")
+		frappe.local.response['message'] = _("الايميل تم تسجيلة من قبل")
 		return
 	elif frappe.db.exists("User", {"phone": phone}):
 		frappe.local.response['http_status_code'] = 400
-		frappe.local.response['message'] = _("User with the provided phone already exists")
+		frappe.local.response['message'] = _("رقم الهاتف تم تسجيلة من قبل")
 		return
 
 	# Ensure that customer group and territory are set in Selling Settings
 	if not (selling_settings.customer_group and selling_settings.territory):
 		frappe.local.response['http_status_code'] = 404
-		frappe.local.response['message'] = _("Please set customer group and territory in Selling Settings")
+		frappe.local.response['message'] = _("يرجى اكمال اعدادات البيع")
 		frappe.local.response['data'] = {"errors": "Missing Selling Settings"}
 		return
 
@@ -223,7 +223,7 @@ def register(**kwargs):
 
 		# Success response
 		frappe.local.response['http_status_code'] = 200
-		frappe.local.response['message'] = _("Customer registration successful")
+		frappe.local.response['message'] = _("تم تسجيل العميل بنجاح")
 		frappe.local.response['data'] = {
 			"customer_name": customer.customer_name,
 			"contact_name": contact.name,
@@ -231,7 +231,7 @@ def register(**kwargs):
 		}
 	except Exception as e:
 		frappe.local.response['http_status_code'] = 500
-		frappe.local.response['message'] = _("Registration failed: {0}").format(str(e))
+		frappe.local.response['message'] = _("فشل التسجيل: {0}").format(str(e))
 		frappe.local.response['data'] = {"errors": str(e)}
 
 

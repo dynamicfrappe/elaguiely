@@ -64,7 +64,7 @@ def get_category_by_supplier(supplierid, **kwargs):
 		frappe.local.response.data = responses
 	except Exception as e:
 		frappe.local.response['http_status_code'] = 404
-		frappe.local.response['message'] = _("failed to get supplier {0}: {1}").format(supplierid, str(e))
+		frappe.local.response['message'] = _("فشل في الحصول على المورد{0}: {1}").format(supplierid, str(e))
 		frappe.local.response['data'] = {"errors": str(e)}
 
 

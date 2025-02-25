@@ -19,7 +19,7 @@ def get_items_prices(**kwargs):
     alternativeitem = kwargs.get("alternativeitem")#noha
     
     if not customer_id:
-        frappe.local.response["message"] = _("CustomerID is required")
+        frappe.local.response["message"] = _("لابد من ادخال بيانات صحيحة للعميل")
         frappe.local.response['http_status_code'] = 400
         return
     
@@ -173,14 +173,14 @@ def get_items_prices(**kwargs):
 def get_items_search(**kwargs):
     customer = frappe.local.user.customer
     if not customer:
-        frappe.local.response["message"] = _("CustomerID is required")
+        frappe.local.response["message"] = _("لابد من اختيار عميل ")
         frappe.local.response['http_status_code'] = 400
         return
 
     # Fetch the default price list for the customer
     price_list_name = frappe.get_value("Customer", customer, "default_price_list")
     if not price_list_name:
-        frappe.local.response["message"] = _("Default price list not set for the customer.")
+        frappe.local.response["message"] = _("لم يتم تعيين قائمة الأسعار الافتراضية للعميل.")
         frappe.local.response['http_status_code'] = 404
         return
 
@@ -202,14 +202,14 @@ def save_favorite_item(**kwargs):
     item_code = kwargs.get("itemcode")
 
     if not customer_id or not item_code:
-        frappe.local.response["message"] = _("Customer ID and Item Code are required.")
+        frappe.local.response["message"] = _("لابد من تحديد عميل وصنف")
         frappe.local.response['http_status_code'] = 400
         return
 
     favorite_doc_name = frappe.get_value("Favorite", {'customer': customer_id}, 'name')
 
     if not favorite_doc_name:
-        frappe.local.response["message"] = _("No favorite doc found for this customer.")
+        frappe.local.response["message"] = _("لا يوجد مفضلة لهذا العميل.")
         frappe.local.response['http_status_code'] = 404
         return
     
@@ -224,7 +224,7 @@ def save_favorite_item(**kwargs):
     try:
         # Check if the item exists
         if not frappe.db.exists("Item", item_code):
-            frappe.local.response["message"] = _("The item is not found.")
+            frappe.local.response["message"] = _("لا يوجد صنف بهذة البيانات.")
             frappe.local.response['http_status_code'] = 404
             return
 
@@ -242,7 +242,7 @@ def save_favorite_item(**kwargs):
     
     except Exception as e:
         frappe.logger().error(f"Error marking item {item_code} as favorite for customer {customer_id}: {str(e)}")
-        frappe.local.response["message"] = _("An error occurred while marking the item as favorite. Please try again.")
+        frappe.local.response["message"] = _("حدث خطأ أثناء وضع علامة على العنصر كمفضل. يرجى المحاولة مرة أخرى.")
         frappe.local.response['http_status_code'] = 500
         return
 
@@ -255,14 +255,14 @@ def get__alternative_items(**kwargs):
     # customer = frappe.get_value("User",frappe.session.user,'customer')
     item_code = kwargs.get("itemcode")
     if not customer:
-        frappe.local.response["message"] = _("CustomerID is required")
+        frappe.local.response["message"] = _("لابد من اختيار عميل")
         frappe.local.response['http_status_code'] = 400
         return
 
     # Fetch the default price list for the customer
     price_list_name = frappe.get_value("Customer", customer, "default_price_list")
     if not price_list_name:
-        frappe.local.response["message"] = _("Default price list not set for the customer.")
+        frappe.local.response["message"] = _("لم يتم تعيين قائمة الأسعار الافتراضية للعميل.")
         frappe.local.response['http_status_code'] = 404
         return
 

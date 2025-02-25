@@ -14,15 +14,17 @@ from elaguiely.apis_v1.utils import get_item_prices, stock_qty
 def request_sales_order(**kwargs):
     try:
         customer_id = kwargs.get("CustomerID")
+        print('customer_id')
+        print(customer_id)
         if not customer_id:
-            frappe.local.response["message"] = _("CustomerID is required")
+            frappe.local.response["message"] = _("لابد من تحدبد عميل")
             frappe.local.response['http_status_code'] = 400
             return
 
         # Fetch the customer document
         customer = frappe.get_doc("Customer", customer_id)
         if not customer:
-            frappe.local.response["message"] = _("Customer not found")
+            frappe.local.response["message"] = _("لا يوجد عميل بهذا الاسم")
             frappe.local.response['http_status_code'] = 404
             return
         # validate the maximum number of orders allowed
@@ -31,7 +33,7 @@ def request_sales_order(**kwargs):
         special_maximum_daily = frappe.get_value("Customer", customer_id, 'maximum_orders')
         maximum_daily = special_maximum_daily if special_maximum_daily != 0 else default_maximum_daily
         if len(daily_orders) >= maximum_daily:
-            frappe.local.response["message"] = _("Customer reached the maximum number of ordered allowed.")
+            frappe.local.response["message"] = _("وصل العميل إلى الحد الأقصى لعدد الطلبات المسموح بها.")
             frappe.local.response['http_status_code'] = 300
             return
 
@@ -40,7 +42,7 @@ def request_sales_order(**kwargs):
         # Fetch the cart associated with this customer
         cart = frappe.get_doc("Cart", {'customer': customer.name}, fields=['*'])
         if not cart or not cart.get("cart_item"):  # Replace 'items' with the actual child table field
-            frappe.local.response["message"] = _("Cart is empty or not found")
+            frappe.local.response["message"] = _("لا يوجد اصناف بعربة التسوق")
             frappe.local.response['http_status_code'] = 404
             return
 
@@ -64,9 +66,12 @@ def request_sales_order(**kwargs):
             # Validate Item Quantity
             qty = int(stock_qty(customer_id, cart_item.item or 0 ))
             max_qty = int(frappe.get_value("UOM Conversion Detail", filters={'parent': cart_item.item, 'uom': cart_item.uom}, fieldname='maximum_qty') or 0)
+            print('max_qty')
+            print(max_qty)
             max_qty = qty if max_qty == 0 else max_qty
             if not(int(cart_item.qty) <= qty and int(cart_item.qty) <= max_qty):
-                frappe.local.response["message"] = _(f"Quantity required is higher than stock quantity or the allowed quantity for item: {cart_item.item}")
+                print(qty)
+                frappe.local.response["message"] = _(f"الكمية المطلوبة أعلى من كمية المخزون أو الكمية المسموح بها للصنف : {cart_item.item}")
                 frappe.local.response['http_status_code'] = 404
                 return
 
@@ -86,7 +91,7 @@ def request_sales_order(**kwargs):
             })
         minimum_amount = frappe.db.get_single_value("Selling Settings", 'minimum_amount')
         if total_amount < minimum_amount:
-            frappe.local.response["message"] = _(f"Total amount of the order should be more than the minimum amount.")
+            frappe.local.response["message"] = _(f"يجب أن يكون المبلغ الإجمالي للطلب أكثر من الحد الأدنى للمبلغ.")
             frappe.local.response['http_status_code'] = 404
             return
             # print('sales_order ==> ', sales_order)
@@ -98,15 +103,15 @@ def request_sales_order(**kwargs):
         frappe.db.commit()
         # Prepare response data
         frappe.local.response['http_status_code'] = 200
-        frappe.local.response["data"] = _("Sales Order created successfully")
+        frappe.local.response["data"] = _("تم انشاء طلب بيع")
         frappe.local.response["sales_order"] = sales_order.name
 
     except frappe.DoesNotExistError:
-        frappe.local.response["message"] = _("Customer does not exist")
+        frappe.local.response["message"] = _("لا يوجد عميل بهذه البيانات")
         frappe.local.response['http_status_code'] = 404
 
     except Exception as e:
-        frappe.local.response["message"] = _("An error occurred while creating Sales Order")
+        frappe.local.response["message"] = _("حدث خظأ اثناء انشاء امر بيع")
         frappe.local.response['http_status_code'] = 500
         frappe.local.response["error"] = str(e)
 
@@ -324,7 +329,7 @@ def cancel_order(order):
         if doc.customer == frappe.local.user.get("customer"):
             if doc.docstatus == 2 :
                 frappe.local.response['http_status_code'] = 400
-                frappe.local.response['message'] = "Order already canceled"
+                frappe.local.response['message'] = "تم إلغاء الطلب بالفعل"
                 return "Order already canceled"
             try:
                 if doc.docstatus != 1:
@@ -335,7 +340,7 @@ def cancel_order(order):
                 doc.save(ignore_permissions=True)
                 frappe.db.commit()
                 frappe.local.response['http_status_code'] = 200
-                frappe.local.response['message'] = _("The Order Canceled")
+                frappe.local.response['message'] = _("تم الغاء الطلب")
                 return "The Order Canceled."
             except Exception as e:
                 frappe.local.response['http_status_code'] = 400
@@ -344,11 +349,11 @@ def cancel_order(order):
 
         else:
             frappe.local.response['http_status_code'] = 400
-            frappe.local.response['message'] = _("This Customer not owner for this order")
+            frappe.local.response['message'] = _("هذا العميل ليس مالكًا لهذا الطلب")
             return "No order found like this."
     else:
         frappe.local.response['http_status_code'] = 400
-        frappe.local.response['message'] = _("No order found like this.")
+        frappe.local.response['message'] = _("لم يتم العثور على هذا الطلب  .")
     return "No order found like this."
 	
 
@@ -374,13 +379,13 @@ def reorder(**kwargs):
             cart.save()
             frappe.db.commit()
             frappe.local.response['http_status_code'] = 200
-            frappe.local.response['message'] = _("The order items set in cart")
+            frappe.local.response['message'] = _("تم اضافة تالطلب فى عربة التسوق")
 
         else:
             frappe.local.response['http_status_code'] = 400
-            frappe.local.response['message'] = _("This Customer not owner for this order")
+            frappe.local.response['message'] = _("العميل مختلف عن العميل الذى قام بعمل الطلب")
             return "No order found like this."
     else:
         frappe.local.response['http_status_code'] = 400
-        frappe.local.response['message'] = _("No order found like this.")
+        frappe.local.response['message'] = _("لا يوجد طلب.")
         return "No order found like this."
