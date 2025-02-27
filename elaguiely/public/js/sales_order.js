@@ -10,7 +10,7 @@ frappe.ui.form.on("Sales Order", {
 				]
 			};
 			if (row.item_code) {
-				query.query = "elaguiely.controllers.queries.warehouse_query";
+				query.query = "elaguiely.controllers.queries.uom_query";
 				query.filters.push(["parent", "=", row.item_code]);
 			}
 			return query;

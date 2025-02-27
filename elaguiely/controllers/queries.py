@@ -4,7 +4,7 @@ from collections import defaultdict
 from frappe.desk.reportview import get_filters_cond, get_match_cond
 
 @frappe.whitelist()
-def warehouse_query(doctype, txt, searchfield, start, page_len, filters):
+def uom_query(doctype, txt, searchfield, start, page_len, filters):
 	# Should be used when item code is passed in filters.
 	doctype = "UOM Conversion Detail"
 	conditions, bin_conditions = [], []
