@@ -25,7 +25,25 @@ frappe.ui.form.on('Sales Invoice', {
             })
                 
         }
-    }
+    },
+
+    onload: function(frm) {
+		
+		frm.set_query('uom', 'items', function(doc, cdt, cdn) {
+			let row  = locals[cdt][cdn];
+			let query = {
+				filters: [
+				]
+			};
+			if (row.item_code) {
+				query.query = "elaguiely.controllers.queries.uom_query";
+				query.filters.push(["parent", "=", row.item_code]);
+			}
+			return query;
+		});
+
+        
+	},
 })
 frappe.ui.form.on('Sales Invoice Item' , {
 
